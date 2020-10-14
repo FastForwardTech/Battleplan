@@ -33,6 +33,8 @@ protected:
 	bool event(QEvent *e) override;
 	void mouseMove(QMouseEvent *event);
 	void mouseDoubleClick(QMouseEvent *event);
+	void mousePress(QMouseEvent *event);
+	void mouseRelease(QMouseEvent *event);
 
 private:
 	Ui::GameMap *ui;
@@ -43,9 +45,12 @@ private:
 	int gridHOffset = 0;
 	int gridVOffset = 0;
 
-	Player* mpCurrentPlayer;
+	Player* mpCurrentPlayer = nullptr;
 	int mCurrentMouseX;
 	int mCurrentMouseY;
+
+	bool dragOccuring = false;
+	Player* dragging = nullptr;
 
 	void drawPlayers();
 	void drawPlayerCard(Player* player, int x, int y);

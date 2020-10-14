@@ -149,6 +149,14 @@ bool GameMap::event(QEvent * e)
 		mouseMove(static_cast<QMouseEvent*>(e));
 		return true;
 		break;
+	case QEvent::MouseButtonPress:
+		mousePress(static_cast<QMouseEvent*>(e));
+		return true;
+		break;
+	case QEvent::MouseButtonRelease:
+		mouseRelease(static_cast<QMouseEvent*>(e));
+		return true;
+		break;
 	case QEvent::MouseButtonDblClick:
 		mouseDoubleClick(static_cast<QMouseEvent*>(e));
 		return true;
@@ -176,6 +184,32 @@ void GameMap::mouseMove(QMouseEvent *event)
 			repaint();
 		}
 	}
+
+	if (dragOccuring == true && mpCurrentPlayer == nullptr && dragging != nullptr)
+	{
+		QRect playerRect = getPlayerRect(dragging);
+		int width = playerRect.width();
+		int height = playerRect.height();
+		if (xPos > playerRect.x() + width)
+		{
+			dragging->setXPos(dragging->getXPos()+1);
+		}
+		else if (xPos < playerRect.x())
+		{
+			dragging->setXPos(dragging->getXPos()-1);
+		}
+		else if (yPos > playerRect.y() + height)
+		{
+			dragging->setYPos(dragging->getYPos()+1);
+		}
+		else if (yPos < playerRect.y())
+		{
+			dragging->setYPos(dragging->getYPos()-1);
+		}
+
+		dragging = nullptr;
+		dragOccuring = false;
+	}
 }
 
 void GameMap::mouseDoubleClick(QMouseEvent*)
@@ -186,4 +220,18 @@ void GameMap::mouseDoubleClick(QMouseEvent*)
 		dialog.setPlayer(mpCurrentPlayer);
 		dialog.exec();
 	}
+}
+
+void GameMap::mousePress(QMouseEvent*)
+{
+	if (mpCurrentPlayer != nullptr)
+	{
+		dragOccuring = true;
+		dragging = mpCurrentPlayer;
+	}
+}
+
+void GameMap::mouseRelease(QMouseEvent*)
+{
+	dragOccuring = false;
 }
