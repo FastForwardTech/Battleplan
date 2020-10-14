@@ -14,8 +14,8 @@
    <string>Battleplan</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>../../../Downloads/page-end.png</normaloff>../../../Downloads/page-end.png</iconset>
+   <iconset resource="res.qrc">
+    <normaloff>:/page-end.png</normaloff>:/page-end.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">MainWindow {
@@ -54,6 +54,8 @@ color: white;</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>
