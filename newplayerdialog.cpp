@@ -22,6 +22,8 @@ void NewPlayerDialog::on_buttonBox_accepted()
 	mpNewPlayer->setXPos(ui->xPos->value());
 	mpNewPlayer->setYPos(ui->yPos->value());
 	mpNewPlayer->setColor(mColor);
+	mpNewPlayer->setCurrentHitpoints(ui->currentHitpoints->value());
+	mpNewPlayer->setMaxHitpoints(ui->maxHitpoints->value());
 
 	emit addPlayer(mpNewPlayer);
 }

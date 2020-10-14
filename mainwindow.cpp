@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
 	mpToolbar->addWidget(mpGridVOffset);
 	mpToolbar->addSeparator();
 	mpToolbar->addAction(mpChangeGridColor);
+	mpToolbar->setStyleSheet("background-color: white;");
 }
 
 MainWindow::~MainWindow()
