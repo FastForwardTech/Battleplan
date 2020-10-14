@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/abstract_bg.jpg</file>
+        <file>res/add.svg</file>
+        <file>res/page-end.png</file>
+        <file>res/resize.jpg</file>
+    </qresource>
+</RCC>

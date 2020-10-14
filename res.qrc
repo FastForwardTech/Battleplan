@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>background.jpg</file>
-        <file>abstract_bg.jpg</file>
-        <file>add.svg</file>
-        <file>resize.jpg</file>
-        <file>page-end.png</file>
-    </qresource>
-</RCC>

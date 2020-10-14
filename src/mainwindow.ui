@@ -15,11 +15,11 @@
   </property>
   <property name="windowIcon">
    <iconset resource="res.qrc">
-    <normaloff>:/page-end.png</normaloff>:/page-end.png</iconset>
+    <normaloff>:/res/page-end.png</normaloff>:/res/page-end.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">MainWindow {
-	background-image: url(:/abstract_bg.jpg);
+	background-image: url(:/res/abstract_bg.jpg);
 }
 color: white;</string>
   </property>

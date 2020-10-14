@@ -15,26 +15,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += \
-    gamemap.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    newplayerdialog.cpp \
-    player.cpp \
-    playereditdialog.cpp
+SOURCES += *.cpp
 
-HEADERS += \
-    gamemap.h \
-    mainwindow.h \
-    newplayerdialog.h \
-    player.h \
-    playereditdialog.h
+HEADERS += *.h
 
-FORMS += \
-    gamemap.ui \
-    mainwindow.ui \
-    newplayerdialog.ui \
-    playereditdialog.ui
+FORMS += *.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
