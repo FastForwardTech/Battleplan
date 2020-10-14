@@ -20,6 +20,8 @@ void PlayerEditDialog::setPlayer(Player *apPlayer)
 	ui->currentHitpoints->setValue(apPlayer->getCurrentHitpoints());
 	ui->maxHitpoints->setValue(apPlayer->getMaxHitpoints());
 	ui->conditionsList->addItems(apPlayer->getConditions().toList());
+	ui->posX->setValue(apPlayer->getXPos());
+	ui->posY->setValue(apPlayer->getYPos());
 }
 
 void PlayerEditDialog::on_buttonBox_accepted()
@@ -35,6 +37,8 @@ void PlayerEditDialog::on_buttonBox_accepted()
 			QListWidgetItem* item = ui->conditionsList->item(i);
 			conditions.append(item->text());
 		}
+		mpPlayer->setXPos(ui->posX->value());
+		mpPlayer->setYPos(ui->posY->value());
 		mpPlayer->setConditions(conditions);
 	}
 }
