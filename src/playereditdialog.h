@@ -24,6 +24,10 @@ private slots:
 
 	void on_buttonBox_rejected();
 
+	void on_addCondition_button_clicked();
+
+	void on_removeCondition_button_clicked();
+
 private:
 	Ui::PlayerEditDialog *ui;
 	Player* mpPlayer = nullptr;

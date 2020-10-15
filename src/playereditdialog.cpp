@@ -19,9 +19,17 @@ void PlayerEditDialog::setPlayer(Player *apPlayer)
 	ui->name->setText(apPlayer->getName());
 	ui->currentHitpoints->setValue(apPlayer->getCurrentHitpoints());
 	ui->maxHitpoints->setValue(apPlayer->getMaxHitpoints());
-	ui->conditionsList->addItems(apPlayer->getConditions().toList());
+	ui->activeConditionsList->addItems(apPlayer->getConditions().toList());
 	ui->posX->setValue(apPlayer->getXPos());
 	ui->posY->setValue(apPlayer->getYPos());
+	for(QString text: apPlayer->getConditions())
+	{
+		auto matches = ui->inactiveConditionsList->findItems(text, Qt::MatchFixedString);
+		if (matches.size() > 0)
+		{
+			delete matches.at(0);
+		}
+	}
 }
 
 void PlayerEditDialog::on_buttonBox_accepted()
@@ -32,9 +40,9 @@ void PlayerEditDialog::on_buttonBox_accepted()
 		mpPlayer->setCurrentHitpoints(ui->currentHitpoints->value());
 		mpPlayer->setMaxHitpoints(ui->maxHitpoints->value());
 		QVector<QString> conditions;
-		for(int i = 0; i < ui->conditionsList->count(); i++)
+		for(int i = 0; i < ui->activeConditionsList->count(); i++)
 		{
-			QListWidgetItem* item = ui->conditionsList->item(i);
+			QListWidgetItem* item = ui->activeConditionsList->item(i);
 			conditions.append(item->text());
 		}
 		mpPlayer->setXPos(ui->posX->value());
@@ -46,4 +54,16 @@ void PlayerEditDialog::on_buttonBox_accepted()
 void PlayerEditDialog::on_buttonBox_rejected()
 {
 	return;
+}
+
+void PlayerEditDialog::on_addCondition_button_clicked()
+{
+	ui->activeConditionsList->addItem(ui->inactiveConditionsList->takeItem(ui->inactiveConditionsList->currentRow()));
+	ui->activeConditionsList->sortItems();
+}
+
+void PlayerEditDialog::on_removeCondition_button_clicked()
+{
+	ui->inactiveConditionsList->addItem(ui->activeConditionsList->takeItem(ui->activeConditionsList->currentRow()));
+	ui->inactiveConditionsList->sortItems();
 }

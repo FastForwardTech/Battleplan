@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>440</width>
     <height>381</height>
    </rect>
   </property>
@@ -126,7 +126,104 @@
       </widget>
      </item>
      <item>
-      <widget class="QListWidget" name="conditionsList"/>
+      <widget class="QListWidget" name="inactiveConditionsList">
+       <item>
+        <property name="text">
+         <string>Blinded</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Charmed</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Deafened</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Frightened</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Grappled</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Incapacitated</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Invisible</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Paralyzed</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Petrified</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Poisoned</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Prone</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Restrained</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Stunned</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Unconscious</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Exhaustion</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QPushButton" name="addCondition_button">
+         <property name="text">
+          <string>Add &gt;&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="removeCondition_button">
+         <property name="text">
+          <string>&lt;&lt; Remove</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QListWidget" name="activeConditionsList"/>
      </item>
     </layout>
    </item>
