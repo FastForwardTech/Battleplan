@@ -7,36 +7,6 @@ Player::Player(QWidget *parent) : QWidget(parent)
 	this->setAttribute(Qt::WA_Hover, true);
 }
 
-bool Player::event(QEvent * e)
-{
-	switch(e->type())
-	{
-	case QEvent::HoverEnter:
-		hoverEnter(static_cast<QHoverEvent*>(e));
-		return true;
-		break;
-	case QEvent::HoverLeave:
-		hoverLeave(static_cast<QHoverEvent*>(e));
-		return true;
-		break;
-	default:
-		break;
-	}
-	return QWidget::event(e);
-}
-
-void Player::hoverEnter(QHoverEvent*)
-{
-	printf("Hover enter\n");
-	fflush(stdout);
-}
-
-void Player::hoverLeave(QHoverEvent*)
-{
-	printf("Hover leave\n");
-	fflush(stdout);
-}
-
 QVector<QString> Player::getConditions() const
 {
 	return mConditions;
@@ -45,6 +15,7 @@ QVector<QString> Player::getConditions() const
 void Player::setConditions(const QVector<QString> &conditions)
 {
 	mConditions = conditions;
+	emit playerUpdated();
 }
 
 int Player::getCurrentHitpoints() const
@@ -55,6 +26,7 @@ int Player::getCurrentHitpoints() const
 void Player::setCurrentHitpoints(int currentHitpoints)
 {
 	mCurrentHitpoints = currentHitpoints;
+	emit playerUpdated();
 }
 
 int Player::getMaxHitpoints() const
@@ -65,6 +37,7 @@ int Player::getMaxHitpoints() const
 void Player::setMaxHitpoints(int maxHitpoints)
 {
 	mMaxHitpoints = maxHitpoints;
+	emit playerUpdated();
 }
 
 QString Player::getName() const
@@ -75,6 +48,7 @@ QString Player::getName() const
 void Player::setName(const QString &name)
 {
 	mName = name;
+	emit playerUpdated();
 }
 
 int Player::size() const
@@ -95,6 +69,7 @@ QColor Player::color() const
 void Player::setColor(const QColor &color)
 {
 	mColor = color;
+	emit playerUpdated();
 }
 
 int Player::getXPos() const
@@ -105,6 +80,7 @@ int Player::getXPos() const
 void Player::setXPos(int value)
 {
 	xPos = value;
+	emit playerUpdated();
 }
 
 int Player::getYPos() const
@@ -115,4 +91,5 @@ int Player::getYPos() const
 void Player::setYPos(int value)
 {
 	yPos = value;
+	emit playerUpdated();
 }

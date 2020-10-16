@@ -40,7 +40,14 @@ color: white;</string>
     <addaction name="actionNew_Map"/>
     <addaction name="actionAdd_Player"/>
    </widget>
+   <widget class="QMenu" name="menuServer">
+    <property name="title">
+     <string>Server</string>
+    </property>
+    <addaction name="actionConnect"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuServer"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionNew_Map">
@@ -51,6 +58,11 @@ color: white;</string>
   <action name="actionAdd_Player">
    <property name="text">
     <string>Add Player</string>
+   </property>
+  </action>
+  <action name="actionConnect">
+   <property name="text">
+    <string>Connect</string>
    </property>
   </action>
  </widget>

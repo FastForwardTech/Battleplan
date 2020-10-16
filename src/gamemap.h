@@ -22,12 +22,20 @@ public:
 
 	void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
+signals:
+	void gridSizeChanged(int aSize);
+	void gridHOffsetChanged(int aOffset);
+	void gridVOffsetChanged(int aOffset);
+
 public slots:
 	void changeGridSize(int size);
 	void changeGridHOffset(int offset);
 	void changeGridVOffset(int offset);
+
 	void changeGridColor(QColor color);
 	void addPlayer(Player* apPlayer);
+	int gridSize();
+	QVector<Player*> getPlayers();
 
 protected:
 	bool event(QEvent *e) override;

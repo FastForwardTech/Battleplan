@@ -37,12 +37,8 @@ public:
 	void setConditions(const QVector<QString> &conditions);
 
 signals:
+	void playerUpdated();
 
-
-protected:
-	bool event(QEvent *e) override;
-	void hoverEnter(QHoverEvent *event);
-	void hoverLeave(QHoverEvent *event);
 private:
 	int mSize = 80;
 	int xPos = 0;

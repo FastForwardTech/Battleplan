@@ -74,15 +74,34 @@ void GameMap::addPlayer(Player *apPlayer)
 	mPlayers.append(apPlayer);
 }
 
+int GameMap::gridSize()
+{
+	return gridStep;
+}
+
+QVector<Player *> GameMap::getPlayers()
+{
+	return mPlayers;
+}
+
 void GameMap::changeGridSize(int size)
 {
 	gridStep = size;
+	emit gridSizeChanged(gridStep);
 	repaint();
 }
 
 void GameMap::changeGridVOffset(int offset)
 {
 	gridVOffset = offset;
+	emit gridVOffsetChanged(gridVOffset);
+	repaint();
+}
+
+void GameMap::changeGridHOffset(int offset)
+{
+	gridHOffset = offset;
+	emit gridHOffsetChanged(gridHOffset);
 	repaint();
 }
 
@@ -133,12 +152,6 @@ void GameMap::drawPlayerCard(Player* player, int x, int y)
 QRect GameMap::getPlayerRect(Player* player)
 {
 	return QRect((player->getXPos() * gridStep) + gridHOffset, (player->getYPos() * gridStep) + gridVOffset, gridStep, gridStep);
-}
-
-void GameMap::changeGridHOffset(int offset)
-{
-	gridHOffset = offset;
-	repaint();
 }
 
 bool GameMap::event(QEvent * e)

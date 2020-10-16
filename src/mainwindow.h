@@ -5,8 +5,10 @@
 #include <QToolBar>
 #include <QSlider>
 #include <QAction>
+#include <QErrorMessage>
 
 #include "gamemap.h"
+#include "network/battleclient.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,6 +28,14 @@ private slots:
 
 	void on_actionAdd_Player_triggered();
 
+	void on_actionConnect_triggered();
+
+	void initializeServerState();
+
+	void updateStateFromServer(State::GameState aNewState);
+
+	void sendPlayerUpdate();
+
 private:
 	Ui::MainWindow *ui;
 
@@ -42,5 +52,9 @@ private:
 	QAction* mpChangeGridColor;
 
 	void connectMapSignals();
+
+	BattleClient* mpBattleClient;
+
+	QErrorMessage noMapOnConnectError;
 };
 #endif // MAINWINDOW_H

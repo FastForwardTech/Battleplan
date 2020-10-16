@@ -89,3 +89,92 @@ void MainWindow::on_actionAdd_Player_triggered()
 	connect(&dialog, SIGNAL(addPlayer(Player*)), mpGameMap, SLOT(addPlayer(Player*)));
 	dialog.exec();
 }
+
+void MainWindow::on_actionConnect_triggered()
+{
+	if (mpGameMap != nullptr)
+	{
+		mpBattleClient = new BattleClient(QUrl("ws://localhost:1234"));
+		connect(mpBattleClient, SIGNAL(connected()), this, SLOT(initializeServerState()));
+	}
+	else
+	{
+		noMapOnConnectError.showMessage("You must load a map before connecting to a server");
+	}
+}
+
+void MainWindow::initializeServerState()
+{
+	// connect the signals once we're sure the ws connection is stable
+	connect(mpGameMap, SIGNAL(gridSizeChanged(int)), mpBattleClient, SLOT(updateGridStep(int)));
+	connect(mpGameMap, SIGNAL(gridHOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetX(int)));
+	connect(mpGameMap, SIGNAL(gridVOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetY(int)));
+	connect(mpBattleClient, SIGNAL(stateUpdateFromServer(State::GameState)), this, SLOT(updateStateFromServer(State::GameState)));
+	for(Player* player: mpGameMap->getPlayers())
+	{
+		connect(player, SIGNAL(playerUpdated()), this, SLOT(sendPlayerUpdate()));
+	}
+
+	State::GameState state;
+	state.gridOffsetX = mpGridHOffset->value();
+	state.gridOffsetY = mpGridVOffset->value();
+	state.gridStep = mpGameMap->gridSize();
+	state.numPlayers = mpGameMap->getPlayers().size();
+	for(int i = 0; i < mpGameMap->getPlayers().size(); i++)
+	{
+		auto gamePlayer = mpGameMap->getPlayers().at(i);
+		State::Player player;
+		player.name = gamePlayer->getName();
+		player.x = gamePlayer->getXPos();
+		player.y = gamePlayer->getYPos();
+		player.red = gamePlayer->color().red();
+		player.blue = gamePlayer->color().blue();
+		player.green = gamePlayer->color().green();
+		player.currHp = gamePlayer->getCurrentHitpoints();
+		player.maxHp = gamePlayer->getMaxHitpoints();
+		for (int j = 0; j < gamePlayer->getConditions().size(); j++)
+		{
+			auto condition = gamePlayer->getConditions().at(j);
+			player.conditions.append(condition);
+		}
+		state.players.append(player);
+	}
+	mpBattleClient->initializeState(state);
+}
+
+void MainWindow::updateStateFromServer(State::GameState aNewState)
+{
+	mpSlider->blockSignals(true);
+	mpSlider->setValue(aNewState.gridStep);
+	mpSlider->blockSignals(false);
+	mpGameMap->blockSignals(true);
+	mpGameMap->changeGridSize(aNewState.gridStep);
+	mpGameMap->changeGridHOffset(aNewState.gridOffsetX);
+	mpGameMap->changeGridVOffset(aNewState.gridOffsetY);
+	mpGameMap->blockSignals(false);
+
+	for (int i = 0; i < aNewState.players.size(); i++)
+	{
+		auto player = mpGameMap->getPlayers().at(i);
+		auto newPlayer = aNewState.players.at(i);
+		player->blockSignals(true);
+		player->setName(newPlayer.name);
+		player->setXPos(newPlayer.x);
+		player->setYPos(newPlayer.y);
+//		player->setColor()
+		// TODO: figure out how to set color
+		// Also TODO: figure out how to handle adding/deleting players from network perspective
+		// make sure signals in initializeServerState() are hooked up to new players when created
+		player->setMaxHitpoints(newPlayer.maxHp);
+		player->setCurrentHitpoints(newPlayer.currHp);
+		player->setConditions(newPlayer.conditions);
+		player->blockSignals(false);
+	}
+
+	repaint();
+}
+
+void MainWindow::sendPlayerUpdate()
+{
+	mpBattleClient->updatePlayers(mpGameMap->getPlayers());
+}
