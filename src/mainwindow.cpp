@@ -60,13 +60,16 @@ void MainWindow::on_actionNew_Map_triggered()
 	QStringList fileNames;
 	if (dialog.exec())
 	{
-		mpGameMap = new GameMap(ui->centralwidget);
+		if (mpGameMap == nullptr)
+		{
+			mpGameMap = new GameMap(ui->centralwidget);
+		}
 
-		fileNames = dialog.selectedFiles();
-		QString stylesheet = QString("GameMap { background-image:url(\"%1\"); background-repeat: no-repeat; }").arg(fileNames[0]);
-		mpGameMap->setStyleSheet(stylesheet);
-		mpGameMap->show();
-		connectMapSignals();
+			fileNames = dialog.selectedFiles();
+			QString stylesheet = QString("GameMap { background-image:url(\"%1\"); background-repeat: no-repeat; }").arg(fileNames[0]);
+			mpGameMap->setStyleSheet(stylesheet);
+			mpGameMap->show();
+			connectMapSignals();
 	}
 }
 
