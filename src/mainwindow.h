@@ -36,6 +36,10 @@ private slots:
 
 	void sendPlayerUpdate();
 
+    void connectStateSignals();
+
+    void on_actionStart_Game_triggered();
+
 private:
 	Ui::MainWindow *ui;
 
