@@ -46,7 +46,7 @@ private:
 	int xPos = 0;
 	int yPos = 0;
 	QColor mColor = Qt::black;
-	QString mName = "Jeff";
+	QString mName = "Player Name";
 	int mMaxHitpoints = 10;
 	int mCurrentHitpoints = 8;
 	QVector<QString> mConditions = { "Charmed", "Invisible" };
