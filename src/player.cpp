@@ -7,6 +7,28 @@ Player::Player(QWidget *parent) : QWidget(parent)
 	this->setAttribute(Qt::WA_Hover, true);
 }
 
+void Player::drawPlayerCard(QPainter* aPainter, int x, int y)
+{
+	aPainter.fillRect(x + 10, y - 10, 100, 150, Qt::black);
+	painter.setPen(Qt::yellow);
+	int yOffset = 5;
+	int yInc = 15; // space between lines of text
+	painter.drawText(x + 15, y + yOffset, player->getName());
+	painter.setPen(Qt::white);
+	y += yInc;
+	painter.drawText(x + 15, y + yOffset, QString("HP: %1/%2").arg(player->getCurrentHitpoints()).arg(player->getMaxHitpoints()));
+	y += yInc;
+	painter.drawLine(x + 20, y + yOffset, x + 100, y + yOffset);
+	y += yInc;
+	painter.drawText(x + 15, y + yOffset, "Conditions:");
+	painter.setPen(Qt::green);
+	for (QString condition : player->getConditions())
+	{
+		y += yInc;
+		painter.drawText(x + 20, y + yOffset, condition);
+	}
+}
+
 QVector<QString> Player::getConditions() const
 {
 	return mConditions;

@@ -12,6 +12,8 @@ class Player : public QWidget
 public:
 	explicit Player(QWidget *parent = nullptr);
 
+	void drawPlayerCard(QPainter* aPainter, int x, int y);
+
 	int size() const;
 	void setSize(int size);
 
