@@ -9,23 +9,23 @@ Player::Player(QWidget *parent) : QWidget(parent)
 
 void Player::drawPlayerCard(QPainter* aPainter, int x, int y)
 {
-	aPainter.fillRect(x + 10, y - 10, 100, 150, Qt::black);
-	painter.setPen(Qt::yellow);
+    aPainter->fillRect(x + 10, y - 10, 100, 150, Qt::black);
+    aPainter->setPen(Qt::yellow);
 	int yOffset = 5;
 	int yInc = 15; // space between lines of text
-	painter.drawText(x + 15, y + yOffset, getName());
-	painter.setPen(Qt::white);
+    aPainter->drawText(x + 15, y + yOffset, getName());
+    aPainter->setPen(Qt::white);
 	y += yInc;
-	painter.drawText(x + 15, y + yOffset, QString("HP: %1/%2").arg(getCurrentHitpoints()).arg(getMaxHitpoints()));
+    aPainter->drawText(x + 15, y + yOffset, QString("HP: %1/%2").arg(getCurrentHitpoints()).arg(getMaxHitpoints()));
 	y += yInc;
-	painter.drawLine(x + 20, y + yOffset, x + 100, y + yOffset);
+    aPainter->drawLine(x + 20, y + yOffset, x + 100, y + yOffset);
 	y += yInc;
-	painter.drawText(x + 15, y + yOffset, "Conditions:");
-	painter.setPen(Qt::green);
+    aPainter->drawText(x + 15, y + yOffset, "Conditions:");
+    aPainter->setPen(Qt::green);
 	for (QString condition : getConditions())
 	{
 		y += yInc;
-		painter.drawText(x + 20, y + yOffset, condition);
+        aPainter->drawText(x + 20, y + yOffset, condition);
 	}
 }
 

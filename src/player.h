@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QColor>
 #include <QVector>
+#include <QPainter>
 
 class Player : public QWidget
 {

@@ -60,7 +60,7 @@ void GameMap::paintEvent(QPaintEvent *event)
 			painter.drawLine(x, rect.top(), x, rect.bottom());
 		 }
 
-	   drawPlayers();
+       drawPlayers(&painter);
 	   if (mpCurrentPlayer != nullptr)
 	   {
 		   mpCurrentPlayer->drawPlayerCard(&painter, mCurrentMouseX, mCurrentMouseY);
@@ -111,17 +111,14 @@ void GameMap::changeGridColor(QColor color)
 	repaint();
 }
 
-void GameMap::drawPlayers()
+void GameMap::drawPlayers(QPainter* aPainter)
 {
-	QPainter painter(this);
-	painter.begin(this);
 	for(Player* player: mPlayers)
 	{
-		painter.setPen(player->color());
+        aPainter->setPen(player->color());
 		QBrush brush(player->color(), Qt::Dense5Pattern);
-		painter.fillRect(getPlayerRect(player), brush);
+        aPainter->fillRect(getPlayerRect(player), brush);
 	}
-	painter.end();
 }
 
 QRect GameMap::getPlayerRect(Player* player)
