@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QColorDialog>
 
+#include "serverconnectdialog.h"
 #include "newplayerdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -110,8 +111,9 @@ void MainWindow::on_actionConnect_triggered()
 {
 	if (mpGameMap != nullptr)
 	{
-		mpBattleClient = new BattleClient(QUrl("ws://localhost:1234"));
-        connect(mpBattleClient, SIGNAL(connected()), this, SLOT(connectStateSignals()));
+        ServerConnectDialog dialog;
+        connect(&dialog, SIGNAL(connectToServer(QString, int)), this, SLOT(connectToServer(QString, int)));
+        dialog.exec();
 	}
 	else
 	{
@@ -188,4 +190,11 @@ void MainWindow::sendPlayerUpdate()
 void MainWindow::on_actionStart_Game_triggered()
 {
     initializeServerState();
+}
+
+void MainWindow::connectToServer(QString address, int port)
+{
+    QString connectStr = QString("ws://%1:%2").arg(address).arg(port);
+    mpBattleClient = new BattleClient(QUrl(connectStr));
+    connect(mpBattleClient, SIGNAL(connected()), this, SLOT(connectStateSignals()));
 }
