@@ -45,6 +45,7 @@ color: white;</string>
      <string>Server</string>
     </property>
     <addaction name="actionConnect"/>
+    <addaction name="actionStart_Game"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuServer"/>
@@ -63,6 +64,11 @@ color: white;</string>
   <action name="actionConnect">
    <property name="text">
     <string>Connect</string>
+   </property>
+  </action>
+  <action name="actionStart_Game">
+   <property name="text">
+    <string>Start Game</string>
    </property>
   </action>
  </widget>

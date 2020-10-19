@@ -60,8 +60,7 @@ private:
 	bool dragOccuring = false;
 	Player* dragging = nullptr;
 
-	void drawPlayers();
-	void drawPlayerCard(Player* player, int x, int y);
+    void drawPlayers(QPainter *aPainter);
 	QRect getPlayerRect(Player* player);
 };
 

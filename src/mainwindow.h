@@ -36,6 +36,12 @@ private slots:
 
 	void sendPlayerUpdate();
 
+    void connectStateSignals();
+
+    void on_actionStart_Game_triggered();
+
+    void connectToServer(QString address, int port);
+
 private:
 	Ui::MainWindow *ui;
 

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QColor>
 #include <QVector>
+#include <QPainter>
 
 class Player : public QWidget
 {
@@ -11,6 +12,8 @@ class Player : public QWidget
 	Q_OBJECT
 public:
 	explicit Player(QWidget *parent = nullptr);
+
+	void drawPlayerCard(QPainter* aPainter, int x, int y);
 
 	int size() const;
 	void setSize(int size);
@@ -44,7 +47,7 @@ private:
 	int xPos = 0;
 	int yPos = 0;
 	QColor mColor = Qt::black;
-	QString mName = "Jeff";
+	QString mName = "Player Name";
 	int mMaxHitpoints = 10;
 	int mCurrentHitpoints = 8;
 	QVector<QString> mConditions = { "Charmed", "Invisible" };

@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QColorDialog>
 
+#include "serverconnectdialog.h"
 #include "newplayerdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -60,13 +61,16 @@ void MainWindow::on_actionNew_Map_triggered()
 	QStringList fileNames;
 	if (dialog.exec())
 	{
-		mpGameMap = new GameMap(ui->centralwidget);
+		if (mpGameMap == nullptr)
+		{
+			mpGameMap = new GameMap(ui->centralwidget);
+		}
 
-		fileNames = dialog.selectedFiles();
-		QString stylesheet = QString("GameMap { background-image:url(\"%1\"); background-repeat: no-repeat; }").arg(fileNames[0]);
-		mpGameMap->setStyleSheet(stylesheet);
-		mpGameMap->show();
-		connectMapSignals();
+			fileNames = dialog.selectedFiles();
+			QString stylesheet = QString("GameMap { background-image:url(\"%1\"); background-repeat: no-repeat; }").arg(fileNames[0]);
+			mpGameMap->setStyleSheet(stylesheet);
+			mpGameMap->show();
+			connectMapSignals();
 	}
 }
 
@@ -80,7 +84,20 @@ void MainWindow::connectMapSignals()
 	connect(mpSlider, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridSize(int)));
 	connect(mpGridHOffset, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridHOffset(int)));
 	connect(mpGridVOffset, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridVOffset(int)));
-	connect(mpChangeGridColor, SIGNAL(triggered()), this, SLOT(openColorDialog()));
+    connect(mpChangeGridColor, SIGNAL(triggered()), this, SLOT(openColorDialog()));
+}
+
+void MainWindow::connectStateSignals()
+{
+    // connect the signals once we're sure the ws connection is stable
+    connect(mpGameMap, SIGNAL(gridSizeChanged(int)), mpBattleClient, SLOT(updateGridStep(int)));
+    connect(mpGameMap, SIGNAL(gridHOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetX(int)));
+    connect(mpGameMap, SIGNAL(gridVOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetY(int)));
+    connect(mpBattleClient, SIGNAL(stateUpdateFromServer(State::GameState)), this, SLOT(updateStateFromServer(State::GameState)));
+    for(Player* player: mpGameMap->getPlayers())
+    {
+        connect(player, SIGNAL(playerUpdated()), this, SLOT(sendPlayerUpdate()));
+    }
 }
 
 void MainWindow::on_actionAdd_Player_triggered()
@@ -94,8 +111,9 @@ void MainWindow::on_actionConnect_triggered()
 {
 	if (mpGameMap != nullptr)
 	{
-		mpBattleClient = new BattleClient(QUrl("ws://localhost:1234"));
-		connect(mpBattleClient, SIGNAL(connected()), this, SLOT(initializeServerState()));
+        ServerConnectDialog dialog;
+        connect(&dialog, SIGNAL(connectToServer(QString, int)), this, SLOT(connectToServer(QString, int)));
+        dialog.exec();
 	}
 	else
 	{
@@ -105,16 +123,6 @@ void MainWindow::on_actionConnect_triggered()
 
 void MainWindow::initializeServerState()
 {
-	// connect the signals once we're sure the ws connection is stable
-	connect(mpGameMap, SIGNAL(gridSizeChanged(int)), mpBattleClient, SLOT(updateGridStep(int)));
-	connect(mpGameMap, SIGNAL(gridHOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetX(int)));
-	connect(mpGameMap, SIGNAL(gridVOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetY(int)));
-	connect(mpBattleClient, SIGNAL(stateUpdateFromServer(State::GameState)), this, SLOT(updateStateFromServer(State::GameState)));
-	for(Player* player: mpGameMap->getPlayers())
-	{
-		connect(player, SIGNAL(playerUpdated()), this, SLOT(sendPlayerUpdate()));
-	}
-
 	State::GameState state;
 	state.gridOffsetX = mpGridHOffset->value();
 	state.gridOffsetY = mpGridVOffset->value();
@@ -177,4 +185,16 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 void MainWindow::sendPlayerUpdate()
 {
 	mpBattleClient->updatePlayers(mpGameMap->getPlayers());
+}
+
+void MainWindow::on_actionStart_Game_triggered()
+{
+    initializeServerState();
+}
+
+void MainWindow::connectToServer(QString address, int port)
+{
+    QString connectStr = QString("ws://%1:%2").arg(address).arg(port);
+    mpBattleClient = new BattleClient(QUrl(connectStr));
+    connect(mpBattleClient, SIGNAL(connected()), this, SLOT(connectStateSignals()));
 }

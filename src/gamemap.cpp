@@ -60,10 +60,10 @@ void GameMap::paintEvent(QPaintEvent *event)
 			painter.drawLine(x, rect.top(), x, rect.bottom());
 		 }
 
-	   drawPlayers();
+       drawPlayers(&painter);
 	   if (mpCurrentPlayer != nullptr)
 	   {
-		   drawPlayerCard(mpCurrentPlayer, mCurrentMouseX, mCurrentMouseY);
+		   mpCurrentPlayer->drawPlayerCard(&painter, mCurrentMouseX, mCurrentMouseY);
 	   }
 		QWidget::paintEvent(event);
 	   painter.end();
@@ -111,42 +111,14 @@ void GameMap::changeGridColor(QColor color)
 	repaint();
 }
 
-void GameMap::drawPlayers()
+void GameMap::drawPlayers(QPainter* aPainter)
 {
-	QPainter painter(this);
-	painter.begin(this);
 	for(Player* player: mPlayers)
 	{
-		painter.setPen(player->color());
+        aPainter->setPen(player->color());
 		QBrush brush(player->color(), Qt::Dense5Pattern);
-		painter.fillRect(getPlayerRect(player), brush);
+        aPainter->fillRect(getPlayerRect(player), brush);
 	}
-	painter.end();
-}
-
-void GameMap::drawPlayerCard(Player* player, int x, int y)
-{
-	QPainter painter(this);
-	painter.begin(this);
-	painter.fillRect(x + 10, y - 10, 100, 150, Qt::black);
-	painter.setPen(Qt::yellow);
-	int yOffset = 5;
-	int yInc = 15; // space between lines of text
-	painter.drawText(x + 15, y + yOffset, player->getName());
-	painter.setPen(Qt::white);
-	y += yInc;
-	painter.drawText(x + 15, y + yOffset, QString("HP: %1/%2").arg(player->getCurrentHitpoints()).arg(player->getMaxHitpoints()));
-	y += yInc;
-	painter.drawLine(x + 20, y + yOffset, x + 100, y + yOffset);
-	y += yInc;
-	painter.drawText(x + 15, y + yOffset, "Conditions:");
-	painter.setPen(Qt::green);
-	for(QString condition: player->getConditions())
-	{
-		y += yInc;
-		painter.drawText(x + 20, y + yOffset, condition);
-	}
-	painter.end();
 }
 
 QRect GameMap::getPlayerRect(Player* player)
