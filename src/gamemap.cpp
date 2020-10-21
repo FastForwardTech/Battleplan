@@ -22,7 +22,7 @@ GameMap::GameMap(QWidget *parent) :
 	mpSizeGrip->setStyleSheet("QSizeGrip { background: url(:/resize.jpg); }");
 	ui->layout->addWidget(mpSizeGrip, 0, 0, 1, 1, Qt::AlignBottom | Qt::AlignRight);
 	Player* player = new Player();
-	player->setXPos(2);
+	player->move(2, 1);
 	addPlayer(player);
 	this->setAttribute(Qt::WA_Hover, true);
 	this->setAttribute(Qt::WA_MouseTracking);
@@ -38,40 +38,47 @@ GameMap::~GameMap()
 void GameMap::paintEvent(QPaintEvent *event)
 {
 	QStyleOption opt;
-		 opt.init(this);
-		 QPainter painter(this);
-		 style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
+	opt.init(this);
+	QPainter painter(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 
-	   painter.begin(this);
+	painter.begin(this);
 
-		 painter.setPen(mGridColor);
-		 const QRectF rect = event->rect();
-		 qreal start = rect.top() + gridVOffset;
-		 for (qreal y = start - gridStep; y < rect.bottom(); )
-		 {
-			y += gridStep;
-			painter.drawLine(rect.left(), y, rect.right(), y);
-		 }
-		 // now draw vertical grid
-		 start = rect.left() + gridHOffset;
-		 for (qreal x = start - gridStep; x < rect.right(); )
-		 {
-			x += gridStep;
-			painter.drawLine(x, rect.top(), x, rect.bottom());
-		 }
+	painter.setPen(mGridColor);
+	const QRectF rect = event->rect();
+	// draw horizontal grid lines
+	qreal start = rect.top() + gridVOffset;
+	for (qreal y = start - gridStep; y < rect.bottom(); )
+	{
+		y += gridStep;
+		painter.drawLine(rect.left(), y, rect.right(), y);
+	}
+	// now draw vertical grid
+	start = rect.left() + gridHOffset;
+	for (qreal x = start - gridStep; x < rect.right(); )
+	{
+		x += gridStep;
+		painter.drawLine(x, rect.top(), x, rect.bottom());
+	}
 
-       drawPlayers(&painter);
-	   if (mpCurrentPlayer != nullptr)
-	   {
-		   mpCurrentPlayer->drawPlayerCard(&painter, mCurrentMouseX, mCurrentMouseY);
-	   }
-		QWidget::paintEvent(event);
-	   painter.end();
+	QWidget::paintEvent(event);
+
+	// do this after we draw children, so it stays on top
+	if (mpCurrentPlayer != nullptr)
+	{
+		mpCurrentPlayer->drawPlayerCard(&painter, mEventPos.x(), mEventPos.y());
+	}
+
+	painter.end();
 }
 
 void GameMap::addPlayer(Player *apPlayer)
 {
 	mPlayers.append(apPlayer);
+	apPlayer->setParent(this);
+	apPlayer->move(apPlayer->x() * gridStep, apPlayer->y() * gridStep);
+	apPlayer->resize(gridStep, gridStep);
+	apPlayer->installEventFilter(this);
 }
 
 int GameMap::gridSize()
@@ -88,60 +95,33 @@ void GameMap::changeGridSize(int size)
 {
 	gridStep = size;
 	emit gridSizeChanged(gridStep);
-	repaint();
+	update();
 }
 
 void GameMap::changeGridVOffset(int offset)
 {
 	gridVOffset = offset;
 	emit gridVOffsetChanged(gridVOffset);
-	repaint();
+	update();
 }
 
 void GameMap::changeGridHOffset(int offset)
 {
 	gridHOffset = offset;
 	emit gridHOffsetChanged(gridHOffset);
-	repaint();
+	update();
 }
 
 void GameMap::changeGridColor(QColor color)
 {
 	mGridColor = color;
-	repaint();
-}
-
-void GameMap::drawPlayers(QPainter* aPainter)
-{
-	for(Player* player: mPlayers)
-	{
-        aPainter->setPen(player->color());
-		QBrush brush(player->color(), Qt::Dense5Pattern);
-        aPainter->fillRect(getPlayerRect(player), brush);
-	}
-}
-
-QRect GameMap::getPlayerRect(Player* player)
-{
-	return QRect((player->getXPos() * gridStep) + gridHOffset, (player->getYPos() * gridStep) + gridVOffset, gridStep, gridStep);
+	update();
 }
 
 bool GameMap::event(QEvent * e)
 {
 	switch(e->type())
 	{
-	case QEvent::MouseMove:
-		mouseMove(static_cast<QMouseEvent*>(e));
-		return true;
-		break;
-	case QEvent::MouseButtonPress:
-		mousePress(static_cast<QMouseEvent*>(e));
-		return true;
-		break;
-	case QEvent::MouseButtonRelease:
-		mouseRelease(static_cast<QMouseEvent*>(e));
-		return true;
-		break;
 	case QEvent::MouseButtonDblClick:
 		mouseDoubleClick(static_cast<QMouseEvent*>(e));
 		return true;
@@ -152,48 +132,20 @@ bool GameMap::event(QEvent * e)
 	return QWidget::event(e);
 }
 
-void GameMap::mouseMove(QMouseEvent *event)
+bool GameMap::eventFilter(QObject *obj, QEvent *event)
 {
-	int xPos = event->x();
-	int yPos = event->y();
-
-	mpCurrentPlayer = nullptr;
-
-	for (Player* player: mPlayers)
+	if (event->type() == QEvent::MouseMove)
 	{
-		if (getPlayerRect(player).contains(xPos, yPos))
-		{
-			mpCurrentPlayer = player;
-			mCurrentMouseX = xPos;
-			mCurrentMouseY = yPos;
-			repaint();
-		}
+		Player* player = static_cast<Player*>(obj);
+		mpCurrentPlayer = player;
+		QMouseEvent* e = static_cast<QMouseEvent*>(event);
+		mEventPos = player->mapToParent(e->pos());
+		update();
+		return true;
 	}
-
-	if (dragOccuring == true && mpCurrentPlayer == nullptr && dragging != nullptr)
+	else
 	{
-		QRect playerRect = getPlayerRect(dragging);
-		int width = playerRect.width();
-		int height = playerRect.height();
-		if (xPos > playerRect.x() + width)
-		{
-			dragging->setXPos(dragging->getXPos()+1);
-		}
-		else if (xPos < playerRect.x())
-		{
-			dragging->setXPos(dragging->getXPos()-1);
-		}
-		else if (yPos > playerRect.y() + height)
-		{
-			dragging->setYPos(dragging->getYPos()+1);
-		}
-		else if (yPos < playerRect.y())
-		{
-			dragging->setYPos(dragging->getYPos()-1);
-		}
-
-		dragging = nullptr;
-		dragOccuring = false;
+		return QObject::eventFilter(obj, event);
 	}
 }
 
@@ -205,18 +157,4 @@ void GameMap::mouseDoubleClick(QMouseEvent*)
 		dialog.setPlayer(mpCurrentPlayer);
 		dialog.exec();
 	}
-}
-
-void GameMap::mousePress(QMouseEvent*)
-{
-	if (mpCurrentPlayer != nullptr)
-	{
-		dragOccuring = true;
-		dragging = mpCurrentPlayer;
-	}
-}
-
-void GameMap::mouseRelease(QMouseEvent*)
-{
-	dragOccuring = false;
 }

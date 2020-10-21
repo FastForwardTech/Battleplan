@@ -108,8 +108,8 @@ void BattleClient::updatePlayers(QVector<Player*> aPlayers)
 	{
 		State::Player player;
 		player.name = pPlayer->getName();
-		player.x = pPlayer->getXPos();
-		player.y = pPlayer->getYPos();
+		player.x = pPlayer->x();
+		player.y = pPlayer->y();
 		player.red = pPlayer->color().red();
 		player.green = pPlayer->color().green();
 		player.blue = pPlayer->color().blue();

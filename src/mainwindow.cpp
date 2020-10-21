@@ -133,8 +133,8 @@ void MainWindow::initializeServerState()
 		auto gamePlayer = mpGameMap->getPlayers().at(i);
 		State::Player player;
 		player.name = gamePlayer->getName();
-		player.x = gamePlayer->getXPos();
-		player.y = gamePlayer->getYPos();
+		player.x = gamePlayer->x();
+		player.y = gamePlayer->y();
 		player.red = gamePlayer->color().red();
 		player.blue = gamePlayer->color().blue();
 		player.green = gamePlayer->color().green();
@@ -167,8 +167,7 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 		auto newPlayer = aNewState.players.at(i);
 		player->blockSignals(true);
 		player->setName(newPlayer.name);
-		player->setXPos(newPlayer.x);
-		player->setYPos(newPlayer.y);
+		player->move(newPlayer.x, newPlayer.y);
 //		player->setColor()
 		// TODO: figure out how to set color
 		// Also TODO: figure out how to handle adding/deleting players from network perspective

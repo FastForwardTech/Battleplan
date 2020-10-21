@@ -1,15 +1,26 @@
 #include "player.h"
 
 #include <QHoverEvent>
+#include <QStyleOption>
 
 Player::Player(QWidget *parent) : QWidget(parent)
 {
 	this->setAttribute(Qt::WA_Hover, true);
+	this->setMouseTracking(true);
 }
 
 void Player::drawPlayerCard(QPainter* aPainter, int x, int y)
 {
-    aPainter->fillRect(x + 10, y - 10, 100, 150, Qt::black);
+	// set up clipping
+	QRect cardSurface = QRect(x + 10, y - 10, 100, 150);
+	QRect cardSurfaceLocal = QRect(mapFromParent(cardSurface.topLeft()), mapFromParent(cardSurface.bottomRight()));
+	QRegion r1 = this->rect();
+	QRegion r2 = cardSurfaceLocal;
+	QRegion r3 = r1.subtracted(r2);
+	clippingRegion = r3;
+
+	// start drawing the card
+	aPainter->fillRect(cardSurface, Qt::black);
     aPainter->setPen(Qt::yellow);
 	int yOffset = 5;
 	int yInc = 15; // space between lines of text
@@ -38,6 +49,22 @@ void Player::setConditions(const QVector<QString> &conditions)
 {
 	mConditions = conditions;
 	emit playerUpdated();
+}
+
+void Player::paintEvent(QPaintEvent *)
+{
+	QPainter painter(this);
+	painter.begin(this);
+
+	painter.setClipRegion(clippingRegion);
+
+	painter.setPen(mColor);
+	QBrush brush(mColor, Qt::Dense5Pattern);
+	painter.fillRect(this->rect(), brush);
+
+	clippingRegion = QRegion(this->rect());
+
+	painter.end();
 }
 
 int Player::getCurrentHitpoints() const
@@ -73,16 +100,6 @@ void Player::setName(const QString &name)
 	emit playerUpdated();
 }
 
-int Player::size() const
-{
-	return mSize;
-}
-
-void Player::setSize(int size)
-{
-	mSize = size;
-}
-
 QColor Player::color() const
 {
 	return mColor;
@@ -91,27 +108,5 @@ QColor Player::color() const
 void Player::setColor(const QColor &color)
 {
 	mColor = color;
-	emit playerUpdated();
-}
-
-int Player::getXPos() const
-{
-	return xPos;
-}
-
-void Player::setXPos(int value)
-{
-	xPos = value;
-	emit playerUpdated();
-}
-
-int Player::getYPos() const
-{
-	return yPos;
-}
-
-void Player::setYPos(int value)
-{
-	yPos = value;
 	emit playerUpdated();
 }

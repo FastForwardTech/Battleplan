@@ -39,10 +39,8 @@ public slots:
 
 protected:
 	bool event(QEvent *e) override;
-	void mouseMove(QMouseEvent *event);
+	bool eventFilter(QObject* obj, QEvent* event) override;
 	void mouseDoubleClick(QMouseEvent *event);
-	void mousePress(QMouseEvent *event);
-	void mouseRelease(QMouseEvent *event);
 
 private:
 	Ui::GameMap *ui;
@@ -54,14 +52,7 @@ private:
 	int gridVOffset = 0;
 
 	Player* mpCurrentPlayer = nullptr;
-	int mCurrentMouseX;
-	int mCurrentMouseY;
-
-	bool dragOccuring = false;
-	Player* dragging = nullptr;
-
-    void drawPlayers(QPainter *aPainter);
-	QRect getPlayerRect(Player* player);
+	QPoint mEventPos;
 };
 
 #endif // GAMEMAP_H

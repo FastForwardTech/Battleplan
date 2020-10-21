@@ -15,17 +15,8 @@ public:
 
 	void drawPlayerCard(QPainter* aPainter, int x, int y);
 
-	int size() const;
-	void setSize(int size);
-
 	QColor color() const;
 	void setColor(const QColor &color);
-
-	int getXPos() const;
-	void setXPos(int value);
-
-	int getYPos() const;
-	void setYPos(int value);
 
 	QString getName() const;
 	void setName(const QString &name);
@@ -42,8 +33,10 @@ public:
 signals:
 	void playerUpdated();
 
+protected:
+	void paintEvent(QPaintEvent *event) override;
+
 private:
-	int mSize = 80;
 	int xPos = 0;
 	int yPos = 0;
 	QColor mColor = Qt::black;
@@ -51,6 +44,8 @@ private:
 	int mMaxHitpoints = 10;
 	int mCurrentHitpoints = 8;
 	QVector<QString> mConditions = { "Charmed", "Invisible" };
+
+	QRegion clippingRegion;
 };
 
 #endif // PLAYER_H
