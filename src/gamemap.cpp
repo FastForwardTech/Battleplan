@@ -69,7 +69,7 @@ void GameMap::paintEvent(QPaintEvent *event)
 	if (mpCurrentPlayer != nullptr)
 	{
 		// yep, this is ugly. clip all other players by translating the global coordinates of the info
-		// card into local coordinates for each widget, then applying that as the clipping region
+		// card into local coordinates for each widget, then applying the inverse as the clipping region
 		QRect card = mpCurrentPlayer->drawPlayerCard(&painter, mEventPos.x(), mEventPos.y());
 		for(Player* p: mPlayers)
 		{
@@ -123,6 +123,11 @@ QVector<Player *> GameMap::getPlayers()
 void GameMap::changeGridSize(int size)
 {
 	gridStep = size;
+	for (Player* p: mPlayers)
+	{
+		p->move((p->getGridX() * gridStep) + gridHOffset, (p->getGridY() * gridStep) + gridVOffset);
+		p->resize(gridStep, gridStep);
+	}
 	emit gridSizeChanged(gridStep);
 	update();
 }
@@ -130,6 +135,11 @@ void GameMap::changeGridSize(int size)
 void GameMap::changeGridVOffset(int offset)
 {
 	gridVOffset = offset;
+	for (Player* p: mPlayers)
+	{
+		p->move((p->getGridX() * gridStep) + gridHOffset, (p->getGridY() * gridStep) + gridVOffset);
+		p->resize(gridStep, gridStep);
+	}
 	emit gridVOffsetChanged(gridVOffset);
 	update();
 }
@@ -137,6 +147,11 @@ void GameMap::changeGridVOffset(int offset)
 void GameMap::changeGridHOffset(int offset)
 {
 	gridHOffset = offset;
+	for (Player* p: mPlayers)
+	{
+		p->move((p->getGridX() * gridStep) + gridHOffset, (p->getGridY() * gridStep) + gridVOffset);
+		p->resize(gridStep, gridStep);
+	}
 	emit gridHOffsetChanged(gridHOffset);
 	update();
 }
