@@ -25,6 +25,9 @@ GameMap::GameMap(QWidget *parent) :
 	Player* player = new Player();
 	player->setGridPos(2, 1);
 	addPlayer(player);
+	Player* player2 = new Player();
+	player2->setGridPos(1, 1);
+	addPlayer(player2);
 	this->setAttribute(Qt::WA_Hover, true);
 	this->setAttribute(Qt::WA_MouseTracking);
 	this->setAttribute(Qt::WA_MouseNoMask);
@@ -62,13 +65,25 @@ void GameMap::paintEvent(QPaintEvent *event)
 		painter.drawLine(x, rect.top(), x, rect.bottom());
 	}
 
-	QWidget::paintEvent(event);
-
 	// do this after we draw children, so it stays on top
 	if (mpCurrentPlayer != nullptr)
 	{
-		mpCurrentPlayer->drawPlayerCard(&painter, mEventPos.x(), mEventPos.y());
+		// yep, this is ugly. clip all other players by translating the global coordinates of the info
+		// card into local coordinates for each widget, then applying that as the clipping region
+		QRect card = mpCurrentPlayer->drawPlayerCard(&painter, mEventPos.x(), mEventPos.y());
+		for(Player* p: mPlayers)
+		{
+			QRect localCard = QRect(p->mapFromParent(card.topLeft()), p->mapFromParent(card.bottomRight()));
+
+			QRect map = this->rect();
+			QRect localMap = QRect(p->mapFromParent(map.topLeft()), p->mapFromParent(map.bottomRight()));
+
+			QRegion localClip = QRegion(QRegion(localMap)).subtracted(QRegion(localCard));
+			p->setClippingRegion(localClip);
+		}
 	}
+
+	QWidget::paintEvent(event);
 
 	painter.end();
 }

@@ -13,7 +13,7 @@ class Player : public QWidget
 public:
 	explicit Player(QWidget *parent = nullptr);
 
-	void drawPlayerCard(QPainter* aPainter, int x, int y);
+	QRect drawPlayerCard(QPainter* aPainter, int x, int y);
 
 	QColor color() const;
 	void setColor(const QColor &color);
@@ -37,6 +37,9 @@ public:
 	void setGridY(int gridY);
 
 	void setGridPos(int aX, int aY);
+
+	QRegion getClippingRegion() const;
+	void setClippingRegion(const QRegion &value);
 
 signals:
 	void playerUpdated();

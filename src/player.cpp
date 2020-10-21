@@ -28,6 +28,16 @@ bool Player::event(QEvent* e)
 	return QWidget::event(e);
 }
 
+QRegion Player::getClippingRegion() const
+{
+	return clippingRegion;
+}
+
+void Player::setClippingRegion(const QRegion &value)
+{
+	clippingRegion = value;
+}
+
 void Player::mouseDoubleClick(QMouseEvent*)
 {
 	PlayerEditDialog dialog(this);
@@ -82,7 +92,7 @@ void Player::ShowContextMenu(const QPoint &pos)
 	}
 }
 
-void Player::drawPlayerCard(QPainter* aPainter, int x, int y)
+QRect Player::drawPlayerCard(QPainter* aPainter, int x, int y)
 {
 	// set up clipping
 	QRect cardSurface = QRect(x + 10, y - 10, 100, 150);
@@ -111,6 +121,8 @@ void Player::drawPlayerCard(QPainter* aPainter, int x, int y)
 		y += yInc;
         aPainter->drawText(x + 20, y + yOffset, condition);
 	}
+
+	return cardSurface;
 }
 
 QVector<QString> Player::getConditions() const
