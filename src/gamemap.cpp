@@ -28,9 +28,10 @@ GameMap::GameMap(QWidget *parent) :
 	Player* player2 = new Player();
 	player2->setGridPos(1, 1);
 	addPlayer(player2);
-	this->setAttribute(Qt::WA_Hover, true);
-	this->setAttribute(Qt::WA_MouseTracking);
-	this->setAttribute(Qt::WA_MouseNoMask);
+
+	this->setMouseTracking(true);
+	this->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
 }
 
 GameMap::~GameMap()
@@ -92,7 +93,7 @@ void GameMap::addPlayer(Player *apPlayer)
 {
 	mPlayers.append(apPlayer);
 	apPlayer->setParent(this);
-	apPlayer->move(apPlayer->getGridX() * gridStep, apPlayer->getGridY() * gridStep);
+	apPlayer->move((apPlayer->getGridX() * gridStep) + gridHOffset, (apPlayer->getGridY() * gridStep) + gridVOffset);
 	apPlayer->resize(gridStep, gridStep);
 	apPlayer->installEventFilter(this);
 	apPlayer->show();
@@ -176,5 +177,28 @@ bool GameMap::eventFilter(QObject *obj, QEvent *event)
 	else
 	{
 		return QObject::eventFilter(obj, event);
+	}
+}
+
+void GameMap::ShowContextMenu(const QPoint &pos)
+{
+	QPoint globalPos = this->mapToGlobal(pos);
+
+	QMenu myMenu;
+	QAction addAction("Add Player Here");
+	myMenu.addAction(&addAction);
+
+	QAction* selectedItem = myMenu.exec(globalPos);
+	if (selectedItem == &addAction)
+	{
+		Player* p = new Player();
+		// if the grid offset has shifted, we need to subtract that shift from the add pos
+		// to get the actual square
+		p->setGridPos((pos.x() - gridHOffset) / gridStep, (pos.y() - gridVOffset) / gridStep);
+		addPlayer(p);
+	}
+	else
+	{
+		// nothing was chosen
 	}
 }

@@ -53,8 +53,8 @@ private:
 	QColor mColor = Qt::black;
 	QString mName = "Player Name";
 	int mMaxHitpoints = 10;
-	int mCurrentHitpoints = 8;
-	QVector<QString> mConditions = { "Charmed", "Invisible" };
+	int mCurrentHitpoints = 10;
+	QVector<QString> mConditions;
 
 	QRegion clippingRegion;
 	void mouseDoubleClick(QMouseEvent *);

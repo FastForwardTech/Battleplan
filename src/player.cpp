@@ -18,12 +18,12 @@ bool Player::event(QEvent* e)
 {
 	switch(e->type())
 	{
-	case QEvent::MouseButtonDblClick:
-		mouseDoubleClick(static_cast<QMouseEvent*>(e));
-		return true;
-		break;
-	default:
-		break;
+		case QEvent::MouseButtonDblClick:
+			mouseDoubleClick(static_cast<QMouseEvent*>(e));
+			return true;
+			break;
+		default:
+			break;
 	}
 	return QWidget::event(e);
 }

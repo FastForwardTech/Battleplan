@@ -52,6 +52,9 @@ private:
 
 	Player* mpCurrentPlayer = nullptr;
 	QPoint mEventPos;
+
+private slots:
+	void ShowContextMenu(const QPoint& pos);
 };
 
 #endif // GAMEMAP_H
