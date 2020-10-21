@@ -35,6 +35,34 @@ void Player::mouseDoubleClick(QMouseEvent*)
 	dialog.exec();
 }
 
+int Player::getGridY() const
+{
+	return mGridY;
+}
+
+void Player::setGridY(int gridY)
+{
+	mGridY = gridY;
+}
+
+void Player::setGridPos(int aX, int aY)
+{
+	mGridX = aX;
+	mGridY = aY;
+	// since we know the width and height are equal to the grid size...
+	move(aX * this->width(), aY * this->height());
+}
+
+int Player::getGridX() const
+{
+	return mGridX;
+}
+
+void Player::setGridX(int gridX)
+{
+	mGridX = gridX;
+}
+
 void Player::ShowContextMenu(const QPoint &pos)
 {
 	QPoint globalPos = this->mapToGlobal(pos);

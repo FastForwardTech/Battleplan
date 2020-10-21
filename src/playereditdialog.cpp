@@ -20,8 +20,8 @@ void PlayerEditDialog::setPlayer(Player *apPlayer)
 	ui->currentHitpoints->setValue(apPlayer->getCurrentHitpoints());
 	ui->maxHitpoints->setValue(apPlayer->getMaxHitpoints());
 	ui->activeConditionsList->addItems(apPlayer->getConditions().toList());
-	ui->posX->setValue(apPlayer->x());
-	ui->posY->setValue(apPlayer->y());
+	ui->posX->setValue(apPlayer->getGridX());
+	ui->posY->setValue(apPlayer->getGridY());
 	for(QString text: apPlayer->getConditions())
 	{
 		auto matches = ui->inactiveConditionsList->findItems(text, Qt::MatchFixedString);
@@ -45,7 +45,7 @@ void PlayerEditDialog::on_buttonBox_accepted()
 			QListWidgetItem* item = ui->activeConditionsList->item(i);
 			conditions.append(item->text());
 		}
-		mpPlayer->move(ui->posX->value(), ui->posY->value());
+		mpPlayer->setGridPos(ui->posX->value(), ui->posY->value());
 		mpPlayer->setConditions(conditions);
 	}
 }

@@ -19,7 +19,7 @@ NewPlayerDialog::~NewPlayerDialog()
 void NewPlayerDialog::on_buttonBox_accepted()
 {
 	mpNewPlayer->setName(ui->playerName->text());
-	mpNewPlayer->move(ui->xPos->value(), ui->yPos->value());
+	mpNewPlayer->setGridPos(ui->xPos->value(), ui->yPos->value());
 	mpNewPlayer->setColor(mColor);
 	mpNewPlayer->setCurrentHitpoints(ui->currentHitpoints->value());
 	mpNewPlayer->setMaxHitpoints(ui->maxHitpoints->value());

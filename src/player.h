@@ -30,6 +30,14 @@ public:
 	QVector<QString> getConditions() const;
 	void setConditions(const QVector<QString> &conditions);
 
+	int getGridX() const;
+	void setGridX(int gridX);
+
+	int getGridY() const;
+	void setGridY(int gridY);
+
+	void setGridPos(int aX, int aY);
+
 signals:
 	void playerUpdated();
 	void requestDelete(Player* player);
@@ -47,6 +55,9 @@ private:
 
 	QRegion clippingRegion;
 	void mouseDoubleClick(QMouseEvent *);
+
+	int mGridX = 0;
+	int mGridY = 0;
 
 private slots:
 	void ShowContextMenu(const QPoint& pos);

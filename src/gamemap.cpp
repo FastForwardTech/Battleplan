@@ -23,7 +23,7 @@ GameMap::GameMap(QWidget *parent) :
 	mpSizeGrip->setStyleSheet("QSizeGrip { background: url(:/resize.jpg); }");
 	ui->layout->addWidget(mpSizeGrip, 0, 0, 1, 1, Qt::AlignBottom | Qt::AlignRight);
 	Player* player = new Player();
-	player->move(2, 1);
+	player->setGridPos(2, 1);
 	addPlayer(player);
 	this->setAttribute(Qt::WA_Hover, true);
 	this->setAttribute(Qt::WA_MouseTracking);
@@ -77,7 +77,7 @@ void GameMap::addPlayer(Player *apPlayer)
 {
 	mPlayers.append(apPlayer);
 	apPlayer->setParent(this);
-	apPlayer->move(apPlayer->x() * gridStep, apPlayer->y() * gridStep);
+	apPlayer->move(apPlayer->getGridX() * gridStep, apPlayer->getGridY() * gridStep);
 	apPlayer->resize(gridStep, gridStep);
 	apPlayer->installEventFilter(this);
 	apPlayer->show();
