@@ -34,13 +34,12 @@ public slots:
 
 	void changeGridColor(QColor color);
 	void addPlayer(Player* apPlayer);
+	void removePlayer(Player* apPlayer);
 	int gridSize();
 	QVector<Player*> getPlayers();
 
 protected:
-	bool event(QEvent *e) override;
 	bool eventFilter(QObject* obj, QEvent* event) override;
-	void mouseDoubleClick(QMouseEvent *event);
 
 private:
 	Ui::GameMap *ui;

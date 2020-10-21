@@ -6,6 +6,7 @@
 #include <QStyleOption>
 #include <QSizeGrip>
 #include <QFrame>
+#include <QMenu>
 
 #include "playereditdialog.h"
 
@@ -79,6 +80,18 @@ void GameMap::addPlayer(Player *apPlayer)
 	apPlayer->move(apPlayer->x() * gridStep, apPlayer->y() * gridStep);
 	apPlayer->resize(gridStep, gridStep);
 	apPlayer->installEventFilter(this);
+	connect(apPlayer, SIGNAL(requestDelete(Player*)), this, SLOT(removePlayer(Player*)));
+}
+
+void GameMap::removePlayer(Player* apPlayer)
+{
+	mPlayers.removeAll(apPlayer);
+	layout()->removeWidget(apPlayer);
+	if (mpCurrentPlayer == apPlayer)
+	{
+		mpCurrentPlayer = nullptr;
+	}
+	delete apPlayer;
 }
 
 int GameMap::gridSize()
@@ -118,20 +131,6 @@ void GameMap::changeGridColor(QColor color)
 	update();
 }
 
-bool GameMap::event(QEvent * e)
-{
-	switch(e->type())
-	{
-	case QEvent::MouseButtonDblClick:
-		mouseDoubleClick(static_cast<QMouseEvent*>(e));
-		return true;
-		break;
-	default:
-		break;
-	}
-	return QWidget::event(e);
-}
-
 bool GameMap::eventFilter(QObject *obj, QEvent *event)
 {
 	if (event->type() == QEvent::MouseMove)
@@ -146,15 +145,5 @@ bool GameMap::eventFilter(QObject *obj, QEvent *event)
 	else
 	{
 		return QObject::eventFilter(obj, event);
-	}
-}
-
-void GameMap::mouseDoubleClick(QMouseEvent*)
-{
-	if (mpCurrentPlayer != nullptr)
-	{
-		PlayerEditDialog dialog(this);
-		dialog.setPlayer(mpCurrentPlayer);
-		dialog.exec();
 	}
 }

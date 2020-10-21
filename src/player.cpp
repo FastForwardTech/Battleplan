@@ -2,11 +2,56 @@
 
 #include <QHoverEvent>
 #include <QStyleOption>
+#include <QMenu>
+
+#include "playereditdialog.h"
 
 Player::Player(QWidget *parent) : QWidget(parent)
 {
 	this->setAttribute(Qt::WA_Hover, true);
 	this->setMouseTracking(true);
+	this->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
+}
+
+bool Player::event(QEvent* e)
+{
+	switch(e->type())
+	{
+	case QEvent::MouseButtonDblClick:
+		mouseDoubleClick(static_cast<QMouseEvent*>(e));
+		return true;
+		break;
+	default:
+		break;
+	}
+	return QWidget::event(e);
+}
+
+void Player::mouseDoubleClick(QMouseEvent*)
+{
+	PlayerEditDialog dialog(this);
+	dialog.setPlayer(this);
+	dialog.exec();
+}
+
+void Player::ShowContextMenu(const QPoint &pos)
+{
+	QPoint globalPos = this->mapToGlobal(pos);
+
+	QMenu myMenu;
+	QAction deleteAction("Delete This Player");
+	myMenu.addAction(&deleteAction);
+
+	QAction* selectedItem = myMenu.exec(globalPos);
+	if (selectedItem == &deleteAction)
+	{
+		emit requestDelete(this);
+	}
+	else
+	{
+		// nothing was chosen
+	}
 }
 
 void Player::drawPlayerCard(QPainter* aPainter, int x, int y)

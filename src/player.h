@@ -32,10 +32,12 @@ public:
 
 signals:
 	void playerUpdated();
+	void requestDelete(Player* player);
 
 protected:
 	void paintEvent(QPaintEvent *event) override;
 
+	bool event(QEvent *e) override;
 private:
 	int xPos = 0;
 	int yPos = 0;
@@ -46,6 +48,10 @@ private:
 	QVector<QString> mConditions = { "Charmed", "Invisible" };
 
 	QRegion clippingRegion;
+	void mouseDoubleClick(QMouseEvent *);
+
+private slots:
+	void ShowContextMenu(const QPoint& pos);
 };
 
 #endif // PLAYER_H
