@@ -80,6 +80,7 @@ void GameMap::addPlayer(Player *apPlayer)
 	apPlayer->move(apPlayer->x() * gridStep, apPlayer->y() * gridStep);
 	apPlayer->resize(gridStep, gridStep);
 	apPlayer->installEventFilter(this);
+	apPlayer->show();
 	connect(apPlayer, SIGNAL(requestDelete(Player*)), this, SLOT(removePlayer(Player*)));
 }
 

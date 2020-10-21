@@ -39,8 +39,6 @@ protected:
 
 	bool event(QEvent *e) override;
 private:
-	int xPos = 0;
-	int yPos = 0;
 	QColor mColor = Qt::black;
 	QString mName = "Player Name";
 	int mMaxHitpoints = 10;
