@@ -11,6 +11,7 @@ Player::Player(QWidget *parent) : QWidget(parent)
 	this->setAttribute(Qt::WA_Hover, true);
 	this->setMouseTracking(true);
 	this->setContextMenuPolicy(Qt::CustomContextMenu);
+	this->setFocusPolicy(Qt::ClickFocus);
 	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
 }
 
@@ -22,6 +23,8 @@ bool Player::event(QEvent* e)
 			mouseDoubleClick(static_cast<QMouseEvent*>(e));
 			return true;
 			break;
+		case QEvent::KeyPress:
+
 		default:
 			break;
 	}
@@ -150,6 +153,26 @@ void Player::paintEvent(QPaintEvent *)
 	clippingRegion = QRegion(this->rect());
 
 	painter.end();
+}
+
+void Player::keyPressEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_Right)
+	{
+		setGridPos(mGridX + 1, mGridY);
+	}
+	else if (event->key() == Qt::Key_Left)
+	{
+		setGridPos(mGridX - 1, mGridY);
+	}
+	else if (event->key() == Qt::Key_Up)
+	{
+		setGridPos(mGridX, mGridY - 1);
+	}
+	else if (event->key() == Qt::Key_Down)
+	{
+		setGridPos(mGridX, mGridY + 1);
+	}
 }
 
 int Player::getCurrentHitpoints() const

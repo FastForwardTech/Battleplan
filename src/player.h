@@ -46,7 +46,8 @@ signals:
 	void requestDelete(Player* player);
 
 protected:
-	void paintEvent(QPaintEvent *event) override;
+	void paintEvent(QPaintEvent* event) override;
+	void keyPressEvent(QKeyEvent* event) override;
 
 	bool event(QEvent *e) override;
 private:
