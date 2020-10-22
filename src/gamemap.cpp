@@ -47,8 +47,6 @@ void GameMap::paintEvent(QPaintEvent *event)
 	QPainter painter(this);
 	style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 
-	painter.begin(this);
-
 	painter.setPen(mGridColor);
 	const QRectF rect = event->rect();
 	// draw horizontal grid lines
@@ -85,8 +83,6 @@ void GameMap::paintEvent(QPaintEvent *event)
 	}
 
 	QWidget::paintEvent(event);
-
-	painter.end();
 }
 
 void GameMap::addPlayer(Player *apPlayer)
