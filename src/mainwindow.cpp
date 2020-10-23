@@ -17,9 +17,9 @@ MainWindow::MainWindow(QWidget *parent)
 	this->addToolBar(Qt::RightToolBarArea, mpToolbar);
 	mpSlider = new QSlider();
 	mpSlider->setOrientation(Qt::Horizontal);
-	mpSlider->setValue(80);
-	mpSlider->setMinimum(10);
-	mpSlider->setMaximum(100);
+	mpSlider->setValue(1);
+	mpSlider->setMinimum(20);
+	mpSlider->setMaximum(50);
 
 	mpGridHOffset = new QSlider();
 	mpGridHOffset->setOrientation(Qt::Horizontal);

@@ -5,6 +5,7 @@
 #include <QColor>
 #include <QVector>
 #include <QPainter>
+#include <QPoint>
 
 class Player : public QWidget
 {
@@ -30,16 +31,13 @@ public:
 	QVector<QString> getConditions() const;
 	void setConditions(const QVector<QString> &conditions);
 
-	int getGridX() const;
-	void setGridX(int gridX);
-
-	int getGridY() const;
-	void setGridY(int gridY);
-
-	void setGridPos(int aX, int aY);
-
 	QRegion getClippingRegion() const;
 	void setClippingRegion(const QRegion &value);
+
+	void manualRepaint();
+
+	QPoint getGridPos() const;
+	void setGridPos(const int aX, const int aY);
 
 signals:
 	void playerUpdated();
@@ -60,8 +58,7 @@ private:
 	QRegion clippingRegion;
 	void mouseDoubleClick(QMouseEvent *);
 
-	int mGridX = 0;
-	int mGridY = 0;
+	QPoint mGridPos;
 
 private slots:
 	void ShowContextMenu(const QPoint& pos);

@@ -45,7 +45,9 @@ void GameMap::paintEvent(QPaintEvent *event)
 	QStyleOption opt;
 	opt.init(this);
 	QPainter painter(this);
+
 	style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
+	QWidget::paintEvent(event);
 
 	painter.setPen(mGridColor);
 	const QRectF rect = event->rect();
@@ -64,6 +66,14 @@ void GameMap::paintEvent(QPaintEvent *event)
 		painter.drawLine(x, rect.top(), x, rect.bottom());
 	}
 
+	// align players based on current grid parameters
+	for (Player* p: mPlayers)
+	{
+		p->move((p->getGridPos().x() * gridStep) + gridHOffset, (p->getGridPos().y() * gridStep) + gridVOffset);
+		p->resize(gridStep, gridStep);
+	}
+
+
 	// do this after we draw children, so it stays on top
 	if (mpCurrentPlayer != nullptr)
 	{
@@ -81,16 +91,12 @@ void GameMap::paintEvent(QPaintEvent *event)
 			p->setClippingRegion(localClip);
 		}
 	}
-
-	QWidget::paintEvent(event);
 }
 
 void GameMap::addPlayer(Player *apPlayer)
 {
 	mPlayers.append(apPlayer);
 	apPlayer->setParent(this);
-	apPlayer->move((apPlayer->getGridX() * gridStep) + gridHOffset, (apPlayer->getGridY() * gridStep) + gridVOffset);
-	apPlayer->resize(gridStep, gridStep);
 	apPlayer->installEventFilter(this);
 	apPlayer->show();
 	connect(apPlayer, SIGNAL(requestDelete(Player*)), this, SLOT(removePlayer(Player*)));
@@ -120,11 +126,6 @@ QVector<Player *> GameMap::getPlayers()
 void GameMap::changeGridSize(int size)
 {
 	gridStep = size;
-	for (Player* p: mPlayers)
-	{
-		p->move((p->getGridX() * gridStep) + gridHOffset, (p->getGridY() * gridStep) + gridVOffset);
-		p->resize(gridStep, gridStep);
-	}
 	emit gridSizeChanged(gridStep);
 	update();
 }
@@ -132,11 +133,6 @@ void GameMap::changeGridSize(int size)
 void GameMap::changeGridVOffset(int offset)
 {
 	gridVOffset = offset;
-	for (Player* p: mPlayers)
-	{
-		p->move((p->getGridX() * gridStep) + gridHOffset, (p->getGridY() * gridStep) + gridVOffset);
-		p->resize(gridStep, gridStep);
-	}
 	emit gridVOffsetChanged(gridVOffset);
 	update();
 }
@@ -144,11 +140,6 @@ void GameMap::changeGridVOffset(int offset)
 void GameMap::changeGridHOffset(int offset)
 {
 	gridHOffset = offset;
-	for (Player* p: mPlayers)
-	{
-		p->move((p->getGridX() * gridStep) + gridHOffset, (p->getGridY() * gridStep) + gridVOffset);
-		p->resize(gridStep, gridStep);
-	}
 	emit gridHOffsetChanged(gridHOffset);
 	update();
 }

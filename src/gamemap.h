@@ -46,7 +46,7 @@ private:
 	QSizeGrip* mpSizeGrip = nullptr;
 	QColor mGridColor = Qt::white;
 	QVector<Player*> mPlayers;
-	int gridStep = 80;
+	int gridStep = 20;
 	int gridHOffset = 0;
 	int gridVOffset = 0;
 

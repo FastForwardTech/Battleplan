@@ -22,9 +22,7 @@ bool Player::event(QEvent* e)
 		case QEvent::MouseButtonDblClick:
 			mouseDoubleClick(static_cast<QMouseEvent*>(e));
 			return true;
-			break;
-		case QEvent::KeyPress:
-
+		break;
 		default:
 			break;
 	}
@@ -41,6 +39,12 @@ void Player::setClippingRegion(const QRegion &value)
 	clippingRegion = value;
 }
 
+void Player::manualRepaint()
+{
+	QPaintEvent event(this->rect());
+	this->paintEvent(&event);
+}
+
 void Player::mouseDoubleClick(QMouseEvent*)
 {
 	PlayerEditDialog dialog(this);
@@ -48,32 +52,15 @@ void Player::mouseDoubleClick(QMouseEvent*)
 	dialog.exec();
 }
 
-int Player::getGridY() const
+QPoint Player::getGridPos() const
 {
-	return mGridY;
+	return mGridPos;
 }
 
-void Player::setGridY(int gridY)
+void Player::setGridPos(const int aX, const int aY)
 {
-	mGridY = gridY;
-}
-
-void Player::setGridPos(int aX, int aY)
-{
-	mGridX = aX;
-	mGridY = aY;
-	// since we know the width and height are equal to the grid size...
-	move(aX * this->width(), aY * this->height());
-}
-
-int Player::getGridX() const
-{
-	return mGridX;
-}
-
-void Player::setGridX(int gridX)
-{
-	mGridX = gridX;
+	mGridPos.setX(aX);
+	mGridPos.setY(aY);
 }
 
 void Player::ShowContextMenu(const QPoint &pos)
@@ -159,20 +146,22 @@ void Player::keyPressEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_Right)
 	{
-		setGridPos(mGridX + 1, mGridY);
+		setGridPos(mGridPos.x() + 1, mGridPos.y());
 	}
 	else if (event->key() == Qt::Key_Left)
 	{
-		setGridPos(mGridX - 1, mGridY);
+		setGridPos(mGridPos.x() - 1, mGridPos.y());
 	}
 	else if (event->key() == Qt::Key_Up)
 	{
-		setGridPos(mGridX, mGridY - 1);
+		setGridPos(mGridPos.x(), mGridPos.y() - 1);
 	}
 	else if (event->key() == Qt::Key_Down)
 	{
-		setGridPos(mGridX, mGridY + 1);
+		setGridPos(mGridPos.x(), mGridPos.y() + 1);
 	}
+	update();
+	this->parentWidget()->update();
 }
 
 int Player::getCurrentHitpoints() const
