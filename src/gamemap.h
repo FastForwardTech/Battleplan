@@ -26,6 +26,7 @@ signals:
 	void gridSizeChanged(int aSize);
 	void gridHOffsetChanged(int aOffset);
 	void gridVOffsetChanged(int aOffset);
+	void playersChanged(QVector<Player*> players);
 
 public slots:
 	void changeGridSize(int size);
@@ -35,6 +36,7 @@ public slots:
 	void changeGridColor(QColor color);
 	void addPlayer(Player* apPlayer);
 	void removePlayer(Player* apPlayer);
+	void EmitPlayerUpdate();
 	int gridSize();
 	QVector<Player*> getPlayers();
 

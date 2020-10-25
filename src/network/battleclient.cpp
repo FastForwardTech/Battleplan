@@ -53,18 +53,9 @@
 
 QT_USE_NAMESPACE
 
-//! [constructor]
-BattleClient::BattleClient(const QUrl &url, bool debug, QObject *parent) :
-    QObject(parent),
-    m_url(url),
-    m_debug(debug)
+BattleClient::BattleClient(QObject *parent) :
+	QObject(parent)
 {
-    if (m_debug)
-        qDebug() << "WebSocket server:" << url;
-	connect(&m_webSocket, &QWebSocket::connected, this, &BattleClient::onConnected);
-	connect(&m_webSocket, SIGNAL(connected()), this, SIGNAL(connected()));
-	connect(&m_webSocket, &QWebSocket::disconnected, this, &BattleClient::closed);
-	m_webSocket.open(QUrl(url));
 }
 
 BattleClient::~BattleClient()
@@ -76,6 +67,15 @@ void BattleClient::initializeState(State::GameState aState)
 {
 	state = aState;
 	sendState();
+}
+
+void BattleClient::connectToServer(const QUrl &url)
+{
+	m_url = url;
+	connect(&m_webSocket, &QWebSocket::connected, this, &BattleClient::onConnected);
+	connect(&m_webSocket, SIGNAL(connected()), this, SIGNAL(connected()));
+	connect(&m_webSocket, &QWebSocket::disconnected, this, &BattleClient::closed);
+	m_webSocket.open(url);
 }
 
 void BattleClient::disconnect()
@@ -108,8 +108,8 @@ void BattleClient::updatePlayers(QVector<Player*> aPlayers)
 	{
 		State::Player player;
 		player.name = pPlayer->getName();
-		player.x = pPlayer->x();
-		player.y = pPlayer->y();
+		player.x = pPlayer->getGridPos().x();
+		player.y = pPlayer->getGridPos().y();
 		player.red = pPlayer->color().red();
 		player.green = pPlayer->color().green();
 		player.blue = pPlayer->color().blue();
@@ -121,24 +121,9 @@ void BattleClient::updatePlayers(QVector<Player*> aPlayers)
 	sendState();
 }
 
-//! [constructor]
-
-//! [onConnected]
 void BattleClient::onConnected()
 {
-    if (m_debug)
-        qDebug() << "WebSocket connected";
-    connect(&m_webSocket, &QWebSocket::textMessageReceived,
-			this, &BattleClient::onTextMessageReceived);
 	connect(&m_webSocket, &QWebSocket::binaryMessageReceived, this, &BattleClient::onBinaryMessageReceived);
-}
-//! [onConnected]
-
-//! [onTextMessageReceived]
-void BattleClient::onTextMessageReceived(QString message)
-{
-	printf("Message received: %s\n", message.toStdString().c_str());
-	fflush(stdout);
 }
 
 void BattleClient::onBinaryMessageReceived(QByteArray data)
@@ -148,8 +133,12 @@ void BattleClient::onBinaryMessageReceived(QByteArray data)
 	emit stateUpdateFromServer(state);
 }
 
+State::GameState BattleClient::getState() const
+{
+	return state;
+}
+
 void BattleClient::sendState()
 {
-	m_webSocket.sendBinaryMessage(state.serialize(state));
+	m_webSocket.sendBinaryMessage(state.serialize());
 }
-//! [onTextMessageReceived]

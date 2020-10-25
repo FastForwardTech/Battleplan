@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QFile>
 #include <QFileDialog>
 #include <QLabel>
 #include <QColorDialog>
@@ -13,13 +14,16 @@ MainWindow::MainWindow(QWidget *parent)
 	, ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+
+	mpBattleClient = new BattleClient();
+
 	mpToolbar = new QToolBar("Tools");
 	this->addToolBar(Qt::RightToolBarArea, mpToolbar);
 	mpSlider = new QSlider();
 	mpSlider->setOrientation(Qt::Horizontal);
-	mpSlider->setValue(1);
-	mpSlider->setMinimum(20);
-	mpSlider->setMaximum(50);
+	mpSlider->setValue(20);
+	mpSlider->setMinimum(15);
+	mpSlider->setMaximum(30);
 
 	mpGridHOffset = new QSlider();
 	mpGridHOffset->setOrientation(Qt::Horizontal);
@@ -48,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+	delete mpBattleClient;
 	delete mpToolbar;
 	delete mpGameMap;
 	delete ui;
@@ -71,6 +76,7 @@ void MainWindow::on_actionNew_Map_triggered()
 			mpGameMap->setStyleSheet(stylesheet);
 			mpGameMap->show();
 			connectMapSignals();
+			initializeState();
 	}
 }
 
@@ -85,19 +91,12 @@ void MainWindow::connectMapSignals()
 	connect(mpGridHOffset, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridHOffset(int)));
 	connect(mpGridVOffset, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridVOffset(int)));
     connect(mpChangeGridColor, SIGNAL(triggered()), this, SLOT(openColorDialog()));
-}
 
-void MainWindow::connectStateSignals()
-{
-    // connect the signals once we're sure the ws connection is stable
-    connect(mpGameMap, SIGNAL(gridSizeChanged(int)), mpBattleClient, SLOT(updateGridStep(int)));
-    connect(mpGameMap, SIGNAL(gridHOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetX(int)));
-    connect(mpGameMap, SIGNAL(gridVOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetY(int)));
-    connect(mpBattleClient, SIGNAL(stateUpdateFromServer(State::GameState)), this, SLOT(updateStateFromServer(State::GameState)));
-    for(Player* player: mpGameMap->getPlayers())
-    {
-        connect(player, SIGNAL(playerUpdated()), this, SLOT(sendPlayerUpdate()));
-    }
+	connect(mpGameMap, SIGNAL(gridSizeChanged(int)), mpBattleClient, SLOT(updateGridStep(int)));
+	connect(mpGameMap, SIGNAL(gridHOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetX(int)));
+	connect(mpGameMap, SIGNAL(gridVOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetY(int)));
+	connect(mpGameMap, SIGNAL(playersChanged(QVector<Player*>)), mpBattleClient, SLOT(updatePlayers(QVector<Player*>)));
+	connect(mpBattleClient, SIGNAL(stateUpdateFromServer(State::GameState)), this, SLOT(updateStateFromServer(State::GameState)));
 }
 
 void MainWindow::on_actionAdd_Player_triggered()
@@ -121,7 +120,7 @@ void MainWindow::on_actionConnect_triggered()
 	}
 }
 
-void MainWindow::initializeServerState()
+void MainWindow::initializeState()
 {
 	State::GameState state;
 	state.gridOffsetX = mpGridHOffset->value();
@@ -133,8 +132,8 @@ void MainWindow::initializeServerState()
 		auto gamePlayer = mpGameMap->getPlayers().at(i);
 		State::Player player;
 		player.name = gamePlayer->getName();
-		player.x = gamePlayer->x();
-		player.y = gamePlayer->y();
+		player.x = gamePlayer->getGridPos().x();
+		player.y = gamePlayer->getGridPos().y();
 		player.red = gamePlayer->color().red();
 		player.blue = gamePlayer->color().blue();
 		player.green = gamePlayer->color().green();
@@ -161,22 +160,57 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 	mpGameMap->changeGridVOffset(aNewState.gridOffsetY);
 	mpGameMap->blockSignals(false);
 
-	for (int i = 0; i < aNewState.players.size(); i++)
+	// update the existing players as far as there is a corresponding player in the state update
+	int i = 0;
+	for (i = 0; i < std::min(mpGameMap->getPlayers().size(), aNewState.players.size()); i++)
 	{
-		auto player = mpGameMap->getPlayers().at(i);
-		auto newPlayer = aNewState.players.at(i);
+		Player* player = mpGameMap->getPlayers().at(i);
+		State::Player newPlayer = aNewState.players.at(i);
+
 		player->blockSignals(true);
 		player->setName(newPlayer.name);
-		player->move(newPlayer.x, newPlayer.y);
-//		player->setColor()
-		// TODO: figure out how to set color
-		// Also TODO: figure out how to handle adding/deleting players from network perspective
-		// make sure signals in initializeServerState() are hooked up to new players when created
+		player->setGridPos(newPlayer.x, newPlayer.y);
+		player->setColor(QColor(newPlayer.red, newPlayer.green, newPlayer.blue));
 		player->setMaxHitpoints(newPlayer.maxHp);
 		player->setCurrentHitpoints(newPlayer.currHp);
 		player->setConditions(newPlayer.conditions);
 		player->blockSignals(false);
 	}
+
+	// if there are more existing players than incoming, remove the excess existing players
+	if (mpGameMap->getPlayers().size() > i)
+	{
+		for (int j = i; j < mpGameMap->getPlayers().size(); j++)
+		{
+			mpGameMap->blockSignals(true);
+			mpGameMap->removePlayer(mpGameMap->getPlayers().at(j));
+			mpGameMap->blockSignals(false);
+		}
+	}
+
+	// if there are more new players than existing, we must allocate them first, then add to existing list
+	if (aNewState.players.size() > i)
+	{
+		for (int j = i; j < aNewState.players.size(); j++)
+		{
+			Player* player = new Player();
+			State::Player newPlayer = aNewState.players.at(j);
+
+			player->blockSignals(true);
+			player->setName(newPlayer.name);
+			player->setGridPos(newPlayer.x, newPlayer.y);
+			player->setColor(QColor(newPlayer.red, newPlayer.green, newPlayer.blue));
+			player->setMaxHitpoints(newPlayer.maxHp);
+			player->setCurrentHitpoints(newPlayer.currHp);
+			player->setConditions(newPlayer.conditions);
+			player->blockSignals(false);
+			mpGameMap->blockSignals(true);
+			mpGameMap->addPlayer(player);
+			mpGameMap->blockSignals(false);
+		}
+	}
+
+	mpGameMap->EmitPlayerUpdate();
 
 	repaint();
 }
@@ -188,12 +222,76 @@ void MainWindow::sendPlayerUpdate()
 
 void MainWindow::on_actionStart_Game_triggered()
 {
-    initializeServerState();
+	initializeState();
 }
 
 void MainWindow::connectToServer(QString address, int port)
 {
     QString connectStr = QString("ws://%1:%2").arg(address).arg(port);
-    mpBattleClient = new BattleClient(QUrl(connectStr));
-    connect(mpBattleClient, SIGNAL(connected()), this, SLOT(connectStateSignals()));
+	mpBattleClient->connectToServer(QUrl(connectStr));
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+	if (mpGameMap == nullptr)
+	{
+		noMapOnConnectError.showMessage("There is no game to save!");
+	}
+	else
+	{
+		QFileDialog dialog(this);
+		dialog.setFileMode(QFileDialog::AnyFile);
+		dialog.setNameFilter("*.dat");
+		dialog.setWindowTitle("Choose a Save Location");
+		QStringList fileNames;
+		if (dialog.exec())
+		{
+			fileNames = dialog.selectedFiles();
+			QString fileName = fileNames[0];
+			if (!fileName.endsWith(".dat"))
+			{
+				fileName.append(".dat");
+			}
+
+			QFile file(fileName);
+			if (!file.open(QIODevice::WriteOnly))
+			{
+				return;
+			}
+
+			QDataStream out(&file);
+			out << mpBattleClient->getState().serialize();
+		}
+	}
+}
+
+void MainWindow::on_actionLoad_triggered()
+{
+	QFileDialog dialog(this);
+	dialog.setFileMode(QFileDialog::AnyFile);
+	dialog.setNameFilter("*.dat");
+	dialog.setWindowTitle("Choose a save file");
+	QStringList fileNames;
+	if (dialog.exec())
+	{
+		fileNames = dialog.selectedFiles();
+
+		QFile file(fileNames[0]);
+		if (!file.open(QIODevice::ReadOnly))
+		{
+			return;
+		}
+
+		QDataStream in(&file);
+		State::GameState state;
+		QByteArray data;
+		in >> data;
+		state = state.deserialize(data);
+
+		if (mpGameMap == nullptr)
+		{
+			on_actionNew_Map_triggered();
+		}
+		updateStateFromServer(state);
+	}
 }

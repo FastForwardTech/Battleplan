@@ -22,12 +22,6 @@ GameMap::GameMap(QWidget *parent) :
 	mpSizeGrip = new QSizeGrip(this);
 	mpSizeGrip->setStyleSheet("QSizeGrip { background: url(:/resize.jpg); }");
 	ui->layout->addWidget(mpSizeGrip, 0, 0, 1, 1, Qt::AlignBottom | Qt::AlignRight);
-	Player* player = new Player();
-	player->setGridPos(2, 1);
-	addPlayer(player);
-	Player* player2 = new Player();
-	player2->setGridPos(1, 1);
-	addPlayer(player2);
 
 	this->setMouseTracking(true);
 	this->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -100,6 +94,8 @@ void GameMap::addPlayer(Player *apPlayer)
 	apPlayer->installEventFilter(this);
 	apPlayer->show();
 	connect(apPlayer, SIGNAL(requestDelete(Player*)), this, SLOT(removePlayer(Player*)));
+	connect(apPlayer, SIGNAL(playerUpdated()), this, SLOT(EmitPlayerUpdate()));
+	EmitPlayerUpdate();
 }
 
 void GameMap::removePlayer(Player* apPlayer)
@@ -111,6 +107,7 @@ void GameMap::removePlayer(Player* apPlayer)
 		mpCurrentPlayer = nullptr;
 	}
 	delete apPlayer;
+	EmitPlayerUpdate();
 }
 
 int GameMap::gridSize()
@@ -188,4 +185,9 @@ void GameMap::ShowContextMenu(const QPoint &pos)
 	{
 		// nothing was chosen
 	}
+}
+
+void GameMap::EmitPlayerUpdate()
+{
+	emit playersChanged(mPlayers);
 }

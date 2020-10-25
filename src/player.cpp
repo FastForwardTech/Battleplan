@@ -61,6 +61,7 @@ void Player::setGridPos(const int aX, const int aY)
 {
 	mGridPos.setX(aX);
 	mGridPos.setY(aY);
+	emit playerUpdated();
 }
 
 void Player::ShowContextMenu(const QPoint &pos)
@@ -162,6 +163,7 @@ void Player::keyPressEvent(QKeyEvent *event)
 	}
 	update();
 	this->parentWidget()->update();
+	emit playerUpdated();
 }
 
 int Player::getCurrentHitpoints() const

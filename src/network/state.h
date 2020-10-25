@@ -67,17 +67,17 @@ struct GameState {
 	quint8 numPlayers;
 	QVector<Player> players;
 
-	QByteArray serialize(GameState state)
+	QByteArray serialize()
 	{
 		QByteArray byteArray;
 
 		QDataStream stream(&byteArray, QIODevice::WriteOnly);
 
-		stream << state.gridOffsetX;
-		stream << state.gridOffsetY;
-		stream << state.gridStep;
-		stream << state.numPlayers;
-		stream << state.players;
+		stream << gridOffsetX;
+		stream << gridOffsetY;
+		stream << gridStep;
+		stream << numPlayers;
+		stream << players;
 
 		return byteArray;
 	}

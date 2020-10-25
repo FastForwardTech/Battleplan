@@ -39,6 +39,8 @@ color: white;</string>
     </property>
     <addaction name="actionNew_Map"/>
     <addaction name="actionAdd_Player"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionLoad"/>
    </widget>
    <widget class="QMenu" name="menuServer">
     <property name="title">
@@ -69,6 +71,16 @@ color: white;</string>
   <action name="actionStart_Game">
    <property name="text">
     <string>Start Game</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Load</string>
    </property>
   </action>
  </widget>

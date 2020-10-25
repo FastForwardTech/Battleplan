@@ -50,7 +50,7 @@
 #ifndef BattleClient_H
 #define BattleClient_H
 
-#include <QtCore/QObject>
+#include <QObject>
 #include <QtWebSockets/QWebSocket>
 #include "network/state.h"
 #include "player.h"
@@ -59,14 +59,17 @@ class BattleClient : public QObject
 {
     Q_OBJECT
 public:
-	explicit BattleClient(const QUrl &url, bool debug = false, QObject *parent = nullptr);
+	explicit BattleClient(QObject *parent = nullptr);
 	~BattleClient();
 
 	void initializeState(State::GameState aState);
+	void connectToServer(const QUrl &url);
 	void disconnect();
 
+	State::GameState getState() const;
+
 Q_SIGNALS:
-    void closed();
+	void closed();
 	void connected();
 
 	void stateUpdateFromServer(State::GameState newState);
@@ -79,7 +82,6 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void onConnected();
-    void onTextMessageReceived(QString message);
 	void onBinaryMessageReceived(QByteArray data);
 
 private:

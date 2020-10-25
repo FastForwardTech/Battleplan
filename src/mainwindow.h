@@ -30,17 +30,19 @@ private slots:
 
 	void on_actionConnect_triggered();
 
-	void initializeServerState();
+	void initializeState();
 
 	void updateStateFromServer(State::GameState aNewState);
 
 	void sendPlayerUpdate();
 
-    void connectStateSignals();
-
     void on_actionStart_Game_triggered();
 
     void connectToServer(QString address, int port);
+
+	void on_actionSave_triggered();
+
+	void on_actionLoad_triggered();
 
 private:
 	Ui::MainWindow *ui;
