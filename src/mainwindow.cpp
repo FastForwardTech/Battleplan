@@ -63,6 +63,7 @@ void MainWindow::on_actionNew_Map_triggered()
 	QFileDialog dialog(this);
 	dialog.setFileMode(QFileDialog::ExistingFile);
 	dialog.setNameFilter(tr("Images (*.png *.jpg)"));
+	dialog.setWindowTitle("Choose map file");
 	QStringList fileNames;
 	if (dialog.exec())
 	{
