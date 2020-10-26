@@ -158,6 +158,12 @@ bool GameMap::eventFilter(QObject *obj, QEvent *event)
 		update();
 		return true;
 	}
+	else if (event->type() == QEvent::Leave)
+	{
+		mpCurrentPlayer = nullptr;
+		update();
+		return true;
+	}
 	else
 	{
 		return QObject::eventFilter(obj, event);
