@@ -19,11 +19,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 	mpToolbar = new QToolBar("Tools");
 	this->addToolBar(Qt::RightToolBarArea, mpToolbar);
-	mpSlider = new QSlider();
-	mpSlider->setOrientation(Qt::Horizontal);
-	mpSlider->setValue(20);
-	mpSlider->setMinimum(15);
-	mpSlider->setMaximum(30);
+
+	mpGridSpinBox = new QDoubleSpinBox();
+	mpGridSpinBox->setValue(20);
+	mpGridSpinBox->setMinimum(15);
+	mpGridSpinBox->setMaximum(30);
 
 	mpGridHOffset = new QSlider();
 	mpGridHOffset->setOrientation(Qt::Horizontal);
@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
 	mpChangeGridColor = new QAction("Change Grid Color");
 
 	mpToolbar->addWidget(new QLabel("Grid Size"));
-	mpToolbar->addWidget(mpSlider);
+	mpToolbar->addWidget(mpGridSpinBox);
 	mpToolbar->addWidget(new QLabel("Grid Horizontal Offset"));
 	mpToolbar->addWidget(mpGridHOffset);
 	mpToolbar->addWidget(new QLabel("Grid Vertical Offset"));
@@ -52,6 +52,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+	delete mpChangeGridColor;
+	delete mpGridVOffset;
+	delete mpGridHOffset;
+	delete mpGridSpinBox;
 	delete mpBattleClient;
 	delete mpToolbar;
 	delete mpGameMap;
@@ -88,12 +92,12 @@ void MainWindow::openColorDialog()
 
 void MainWindow::connectMapSignals()
 {
-	connect(mpSlider, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridSize(int)));
+	connect(mpGridSpinBox, SIGNAL(valueChanged(double)), mpGameMap, SLOT(changeGridSize(qreal)));
 	connect(mpGridHOffset, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridHOffset(int)));
 	connect(mpGridVOffset, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridVOffset(int)));
     connect(mpChangeGridColor, SIGNAL(triggered()), this, SLOT(openColorDialog()));
 
-	connect(mpGameMap, SIGNAL(gridSizeChanged(int)), mpBattleClient, SLOT(updateGridStep(int)));
+	connect(mpGameMap, SIGNAL(gridSizeChanged(qreal)), mpBattleClient, SLOT(updateGridStep(qreal)));
 	connect(mpGameMap, SIGNAL(gridHOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetX(int)));
 	connect(mpGameMap, SIGNAL(gridVOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetY(int)));
 	connect(mpGameMap, SIGNAL(playersChanged(QVector<Player*>)), mpBattleClient, SLOT(updatePlayers(QVector<Player*>)));
@@ -152,9 +156,9 @@ void MainWindow::initializeState()
 
 void MainWindow::updateStateFromServer(State::GameState aNewState)
 {
-	mpSlider->blockSignals(true);
-	mpSlider->setValue(aNewState.gridStep);
-	mpSlider->blockSignals(false);
+	mpGridSpinBox->blockSignals(true);
+	mpGridSpinBox->setValue(aNewState.gridStep);
+	mpGridSpinBox->blockSignals(false);
 	mpGameMap->blockSignals(true);
 	mpGameMap->changeGridSize(aNewState.gridStep);
 	mpGameMap->changeGridHOffset(aNewState.gridOffsetX);

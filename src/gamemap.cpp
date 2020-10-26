@@ -120,7 +120,7 @@ QVector<Player *> GameMap::getPlayers()
 	return mPlayers;
 }
 
-void GameMap::changeGridSize(int size)
+void GameMap::changeGridSize(qreal size)
 {
 	gridStep = size;
 	emit gridSizeChanged(gridStep);

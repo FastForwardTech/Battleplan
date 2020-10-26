@@ -63,7 +63,7 @@ struct Player {
 struct GameState {
 	quint8 gridOffsetX;
 	quint8 gridOffsetY;
-	quint8 gridStep;
+	qreal gridStep;
 	quint8 numPlayers;
 	QVector<Player> players;
 

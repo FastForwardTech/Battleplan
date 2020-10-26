@@ -23,13 +23,13 @@ public:
 	void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 signals:
-	void gridSizeChanged(int aSize);
+	void gridSizeChanged(qreal aSize);
 	void gridHOffsetChanged(int aOffset);
 	void gridVOffsetChanged(int aOffset);
 	void playersChanged(QVector<Player*> players);
 
 public slots:
-	void changeGridSize(int size);
+	void changeGridSize(qreal size);
 	void changeGridHOffset(int offset);
 	void changeGridVOffset(int offset);
 
@@ -48,7 +48,7 @@ private:
 	QSizeGrip* mpSizeGrip = nullptr;
 	QColor mGridColor = Qt::white;
 	QVector<Player*> mPlayers;
-	int gridStep = 20;
+	qreal gridStep = 20;
 	int gridHOffset = 0;
 	int gridVOffset = 0;
 

@@ -6,6 +6,7 @@
 #include <QSlider>
 #include <QAction>
 #include <QErrorMessage>
+#include <QDoubleSpinBox>
 
 #include "gamemap.h"
 #include "network/battleclient.h"
@@ -51,7 +52,7 @@ private:
 
 	QToolBar* mpToolbar;
 
-	QSlider* mpSlider;
+	QDoubleSpinBox* mpGridSpinBox;
 
 	QSlider* mpGridHOffset;
 

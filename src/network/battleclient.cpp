@@ -95,7 +95,7 @@ void BattleClient::updateGridOffsetY(int aOffset)
 	sendState();
 }
 
-void BattleClient::updateGridStep(int aStep)
+void BattleClient::updateGridStep(qreal aStep)
 {
 	state.gridStep = aStep;
 	sendState();

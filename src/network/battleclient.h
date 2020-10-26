@@ -77,7 +77,7 @@ Q_SIGNALS:
 public Q_SLOTS:
 	void updateGridOffsetX(int aOffset);
 	void updateGridOffsetY(int aOffset);
-	void updateGridStep(int aStep);
+	void updateGridStep(qreal aStep);
 	void updatePlayers(QVector<Player*> aPlayers);
 
 private Q_SLOTS:
