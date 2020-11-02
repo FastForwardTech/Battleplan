@@ -22,7 +22,8 @@ GameMap::GameMap(QWidget *parent) :
 	mpSizeGrip = new QSizeGrip(this);
 	mpSizeGrip->setStyleSheet("QSizeGrip { background: url(:/resize.jpg); }");
 	ui->layout->addWidget(mpSizeGrip, 0, 0, 1, 1, Qt::AlignBottom | Qt::AlignRight);
-	this->grabKeyboard();
+	this->setFocus();
+	this->setFocusPolicy(Qt::ClickFocus);
 
 	this->setMouseTracking(true);
 	this->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -67,7 +68,6 @@ void GameMap::paintEvent(QPaintEvent *event)
 		p->move((p->getGridPos().x() * gridStep) + gridHOffset, (p->getGridPos().y() * gridStep) + gridVOffset);
 		p->resize(gridStep, gridStep);
 	}
-
 
 	// do this after we draw children, so it stays on top
 	if (mpPlayerUnderMouse != nullptr)
