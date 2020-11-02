@@ -5,6 +5,7 @@
 #include <QSizeGrip>
 #include <QColor>
 #include <QVector>
+#include <QRubberBand>
 
 #include "player.h"
 
@@ -42,6 +43,10 @@ public slots:
 
 protected:
 	bool eventFilter(QObject* obj, QEvent* event) override;
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
+	void mouseReleaseEvent(QMouseEvent* event) override;
+	void keyPressEvent(QKeyEvent* event) override;
 
 private:
 	Ui::GameMap *ui;
@@ -51,9 +56,12 @@ private:
 	qreal gridStep = 20;
 	int gridHOffset = 0;
 	int gridVOffset = 0;
+	QRubberBand* mpSelectionBox = nullptr;
 
-	Player* mpCurrentPlayer = nullptr;
+	Player* mpPlayerUnderMouse = nullptr;
+	QPoint mRubberBandOrigin;
 	QPoint mEventPos;
+	QVector<Player*> mPlayerSelection;
 
 private slots:
 	void ShowContextMenu(const QPoint& pos);

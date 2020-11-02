@@ -22,6 +22,7 @@ GameMap::GameMap(QWidget *parent) :
 	mpSizeGrip = new QSizeGrip(this);
 	mpSizeGrip->setStyleSheet("QSizeGrip { background: url(:/resize.jpg); }");
 	ui->layout->addWidget(mpSizeGrip, 0, 0, 1, 1, Qt::AlignBottom | Qt::AlignRight);
+	this->grabKeyboard();
 
 	this->setMouseTracking(true);
 	this->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -69,11 +70,11 @@ void GameMap::paintEvent(QPaintEvent *event)
 
 
 	// do this after we draw children, so it stays on top
-	if (mpCurrentPlayer != nullptr)
+	if (mpPlayerUnderMouse != nullptr)
 	{
 		// yep, this is ugly. clip all other players by translating the global coordinates of the info
 		// card into local coordinates for each widget, then applying the inverse as the clipping region
-		QRect card = mpCurrentPlayer->drawPlayerCard(&painter, mEventPos.x(), mEventPos.y());
+		QRect card = mpPlayerUnderMouse->drawPlayerCard(&painter, mEventPos.x(), mEventPos.y());
 		for(Player* p: mPlayers)
 		{
 			QRect localCard = QRect(p->mapFromParent(card.topLeft()), p->mapFromParent(card.bottomRight()));
@@ -102,9 +103,9 @@ void GameMap::removePlayer(Player* apPlayer)
 {
 	mPlayers.removeAll(apPlayer);
 	layout()->removeWidget(apPlayer);
-	if (mpCurrentPlayer == apPlayer)
+	if (mpPlayerUnderMouse == apPlayer)
 	{
-		mpCurrentPlayer = nullptr;
+		mpPlayerUnderMouse = nullptr;
 	}
 	delete apPlayer;
 	EmitPlayerUpdate();
@@ -152,7 +153,7 @@ bool GameMap::eventFilter(QObject *obj, QEvent *event)
 	if (event->type() == QEvent::MouseMove)
 	{
 		Player* player = static_cast<Player*>(obj);
-		mpCurrentPlayer = player;
+		mpPlayerUnderMouse = player;
 		QMouseEvent* e = static_cast<QMouseEvent*>(event);
 		mEventPos = player->mapToParent(e->pos());
 		update();
@@ -160,13 +161,55 @@ bool GameMap::eventFilter(QObject *obj, QEvent *event)
 	}
 	else if (event->type() == QEvent::Leave)
 	{
-		mpCurrentPlayer = nullptr;
+		mpPlayerUnderMouse = nullptr;
 		update();
 		return true;
 	}
 	else
 	{
 		return QObject::eventFilter(obj, event);
+	}
+}
+
+void GameMap::mousePressEvent(QMouseEvent *event)
+{
+	mPlayerSelection.clear();
+	mRubberBandOrigin = event->pos();
+	if (mpSelectionBox == nullptr)
+	{
+		mpSelectionBox = new QRubberBand(QRubberBand::Rectangle, this);
+	}
+	mpSelectionBox->setGeometry(QRect(mRubberBandOrigin, QSize()));
+	mpSelectionBox->show();
+}
+
+void GameMap::mouseMoveEvent(QMouseEvent *event)
+{
+	if (mpSelectionBox != nullptr)
+	{
+		mpSelectionBox->setGeometry(QRect(mRubberBandOrigin, event->pos()).normalized());
+	}
+}
+
+void GameMap::mouseReleaseEvent(QMouseEvent *)
+{
+	for (Player* player: mPlayers)
+	{
+		if (mpSelectionBox->geometry().contains(player->geometry()) || mpSelectionBox->geometry().intersects(player->geometry()))
+		{
+			mPlayerSelection.append(player);
+		}
+	}
+	mpSelectionBox->hide();
+	delete mpSelectionBox;
+	mpSelectionBox = nullptr;
+}
+
+void GameMap::keyPressEvent(QKeyEvent *event)
+{
+	for (Player* player: mPlayerSelection)
+	{
+		QApplication::sendEvent(player, event);
 	}
 }
 
