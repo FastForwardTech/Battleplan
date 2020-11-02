@@ -1,6 +1,8 @@
 #include "playereditdialog.h"
 #include "ui_playereditdialog.h"
 
+#include <QColorDialog>
+
 PlayerEditDialog::PlayerEditDialog(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::PlayerEditDialog)
@@ -47,6 +49,7 @@ void PlayerEditDialog::on_buttonBox_accepted()
 		}
 		mpPlayer->setGridPos(ui->posX->value(), ui->posY->value());
 		mpPlayer->setConditions(conditions);
+		mpPlayer->setColor(mColor);
 	}
 }
 
@@ -65,4 +68,9 @@ void PlayerEditDialog::on_removeCondition_button_clicked()
 {
 	ui->inactiveConditionsList->addItem(ui->activeConditionsList->takeItem(ui->activeConditionsList->currentRow()));
 	ui->inactiveConditionsList->sortItems();
+}
+
+void PlayerEditDialog::on_pushButton_Color_clicked()
+{
+	mColor = QColorDialog::getColor(Qt::black, this, "Player Color");
 }
