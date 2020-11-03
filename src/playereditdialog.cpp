@@ -24,6 +24,7 @@ void PlayerEditDialog::setPlayer(Player *apPlayer)
 	ui->activeConditionsList->addItems(apPlayer->getConditions().toList());
 	ui->posX->setValue(apPlayer->getGridPos().x());
 	ui->posY->setValue(apPlayer->getGridPos().y());
+	mColor = apPlayer->color();
 	for(QString text: apPlayer->getConditions())
 	{
 		auto matches = ui->inactiveConditionsList->findItems(text, Qt::MatchFixedString);
