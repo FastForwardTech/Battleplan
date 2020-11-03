@@ -29,6 +29,11 @@ bool Player::event(QEvent* e)
 	return QWidget::event(e);
 }
 
+void Player::setSelected(bool value)
+{
+	selected = value;
+}
+
 QRegion Player::getClippingRegion() const
 {
 	return clippingRegion;
@@ -164,7 +169,15 @@ void Player::paintEvent(QPaintEvent *)
 	painter.setClipRegion(clippingRegion);
 
 	painter.setPen(mColor);
-	QBrush brush(mColor, Qt::Dense5Pattern);
+	QBrush brush;
+	if (selected == true || this->hasFocus() == true)
+	{
+		brush = QBrush(mColor, Qt::SolidPattern);
+	}
+	else
+	{
+		brush = QBrush(mColor, Qt::Dense5Pattern);
+	}
 	painter.fillRect(this->rect(), brush);
 
 	clippingRegion = QRegion(this->rect());

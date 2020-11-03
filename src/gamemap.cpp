@@ -173,6 +173,10 @@ bool GameMap::eventFilter(QObject *obj, QEvent *event)
 
 void GameMap::mousePressEvent(QMouseEvent *event)
 {
+	for (Player* player: mPlayerSelection)
+	{
+		player->setSelected(false);
+	}
 	mPlayerSelection.clear();
 	mRubberBandOrigin = event->pos();
 	if (mpSelectionBox == nullptr)
@@ -181,6 +185,7 @@ void GameMap::mousePressEvent(QMouseEvent *event)
 	}
 	mpSelectionBox->setGeometry(QRect(mRubberBandOrigin, QSize()));
 	mpSelectionBox->show();
+	update();
 }
 
 void GameMap::mouseMoveEvent(QMouseEvent *event)
@@ -198,11 +203,13 @@ void GameMap::mouseReleaseEvent(QMouseEvent *)
 		if (mpSelectionBox->geometry().contains(player->geometry()) || mpSelectionBox->geometry().intersects(player->geometry()))
 		{
 			mPlayerSelection.append(player);
+			player->setSelected(true);
 		}
 	}
 	mpSelectionBox->hide();
 	delete mpSelectionBox;
 	mpSelectionBox = nullptr;
+	update();
 }
 
 void GameMap::keyPressEvent(QKeyEvent *event)

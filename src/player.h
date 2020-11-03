@@ -39,6 +39,8 @@ public:
 	QPoint getGridPos() const;
 	void setGridPos(const int aX, const int aY);
 
+	void setSelected(bool value);
+
 signals:
 	void playerUpdated();
 	void requestDelete(Player* player);
@@ -53,6 +55,7 @@ private:
 	QString mName = "Player Name";
 	int mMaxHitpoints = 10;
 	int mCurrentHitpoints = 10;
+	bool selected = false;
 	QVector<QString> mConditions;
 
 	QRegion clippingRegion;
