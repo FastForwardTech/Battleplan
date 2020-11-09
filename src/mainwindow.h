@@ -31,7 +31,7 @@ private slots:
 
 	void on_actionConnect_triggered();
 
-	void initializeState();
+	void initializeState(bool local = false);
 
 	void updateStateFromServer(State::GameState aNewState);
 

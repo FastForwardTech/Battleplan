@@ -69,6 +69,11 @@ void BattleClient::initializeState(State::GameState aState)
 	sendState();
 }
 
+void BattleClient::updateLocalState(State::GameState aState)
+{
+	state = aState;
+}
+
 void BattleClient::connectToServer(const QUrl &url)
 {
 	m_url = url;

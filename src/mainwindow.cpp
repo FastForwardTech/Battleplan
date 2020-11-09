@@ -125,7 +125,7 @@ void MainWindow::on_actionConnect_triggered()
 	}
 }
 
-void MainWindow::initializeState()
+void MainWindow::initializeState(bool local)
 {
 	State::GameState state;
 	state.gridOffsetX = mpGridHOffset->value();
@@ -151,7 +151,14 @@ void MainWindow::initializeState()
 		}
 		state.players.append(player);
 	}
-	mpBattleClient->initializeState(state);
+	if (local == true)
+	{
+		mpBattleClient->updateLocalState(state);
+	}
+	else
+	{
+		mpBattleClient->initializeState(state);
+	}
 }
 
 void MainWindow::updateStateFromServer(State::GameState aNewState)
@@ -159,6 +166,12 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 	mpGridSpinBox->blockSignals(true);
 	mpGridSpinBox->setValue(aNewState.gridStep);
 	mpGridSpinBox->blockSignals(false);
+	mpGridHOffset->blockSignals(true);
+	mpGridHOffset->setValue(aNewState.gridOffsetX);
+	mpGridHOffset->blockSignals(false);
+	mpGridVOffset->blockSignals(true);
+	mpGridVOffset->setValue(aNewState.gridOffsetY);
+	mpGridVOffset->blockSignals(false);
 	mpGameMap->blockSignals(true);
 	mpGameMap->changeGridSize(aNewState.gridStep);
 	mpGameMap->changeGridHOffset(aNewState.gridOffsetX);
@@ -166,8 +179,7 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 	mpGameMap->blockSignals(false);
 
 	// update the existing players as far as there is a corresponding player in the state update
-	int i = 0;
-	for (i = 0; i < std::min(mpGameMap->getPlayers().size(), aNewState.players.size()); i++)
+	for (int i = 0; i < std::min(mpGameMap->getPlayers().size(), aNewState.players.size()); i++)
 	{
 		Player* player = mpGameMap->getPlayers().at(i);
 		State::Player newPlayer = aNewState.players.at(i);
@@ -183,9 +195,9 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 	}
 
 	// if there are more existing players than incoming, remove the excess existing players
-	if (mpGameMap->getPlayers().size() > i)
+	if (mpGameMap->getPlayers().size() > aNewState.players.size())
 	{
-		for (int j = i; j < mpGameMap->getPlayers().size(); j++)
+		for (int j = aNewState.players.size(); j < mpGameMap->getPlayers().size(); j++)
 		{
 			mpGameMap->blockSignals(true);
 			mpGameMap->removePlayer(mpGameMap->getPlayers().at(j));
@@ -194,9 +206,9 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 	}
 
 	// if there are more new players than existing, we must allocate them first, then add to existing list
-	if (aNewState.players.size() > i)
+	if (aNewState.players.size() > mpGameMap->getPlayers().size())
 	{
-		for (int j = i; j < aNewState.players.size(); j++)
+		for (int j = mpGameMap->getPlayers().size(); j < aNewState.players.size(); j++)
 		{
 			Player* player = new Player();
 			State::Player newPlayer = aNewState.players.at(j);
@@ -215,7 +227,7 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 		}
 	}
 
-	mpGameMap->EmitPlayerUpdate();
+	this->initializeState(true);
 
 	repaint();
 }
