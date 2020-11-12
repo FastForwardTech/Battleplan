@@ -48,6 +48,24 @@ MainWindow::MainWindow(QWidget *parent)
 	mpToolbar->addSeparator();
 	mpToolbar->addAction(mpChangeGridColor);
 	mpToolbar->setStyleSheet("background-color: white;");
+
+	// set up the connection status indicator
+	mpConnectionStatus.resize(15, 15);
+	mpConnectionStatus.setMask(QRegion(QRect(0, 0, 15, 15), QRegion::Ellipse));
+	QPalette palette = mpConnectionStatus.palette();
+	palette.setColor(mpConnectionStatus.backgroundRole(), Qt::red);
+	mpConnectionStatus.setAutoFillBackground(true);
+	mpConnectionStatus.setPalette(palette);
+	QPalette statusPalette = this->statusBar()->palette();
+	statusPalette.setColor(this->statusBar()->backgroundRole(), Qt::white);
+	this->statusBar()->setAutoFillBackground(true);
+	this->statusBar()->setPalette(statusPalette);
+	this->statusBar()->addWidget(&mpConnectionStatus);
+	this->statusBar()->addPermanentWidget(new QLabel("Connection Status"));
+	this->statusBar()->addPermanentWidget(&mpConnectionStatus, 1);
+
+	connect(mpBattleClient, SIGNAL(closed()), this, SLOT(onServerDisconnect()));
+	connect(mpBattleClient, SIGNAL(connected()), this, SLOT(onServerConnect()));
 }
 
 MainWindow::~MainWindow()
@@ -311,4 +329,20 @@ void MainWindow::on_actionLoad_triggered()
 		}
 		updateStateFromServer(state);
 	}
+}
+
+void MainWindow::onServerConnect()
+{
+	QPalette palette = mpConnectionStatus.palette();
+	palette.setColor(mpConnectionStatus.backgroundRole(), Qt::green);
+	mpConnectionStatus.setPalette(palette);
+	mpConnectionStatus.update();
+}
+
+void MainWindow::onServerDisconnect()
+{
+	QPalette palette = mpConnectionStatus.palette();
+	palette.setColor(mpConnectionStatus.backgroundRole(), Qt::red);
+	mpConnectionStatus.setPalette(palette);
+	mpConnectionStatus.update();
 }

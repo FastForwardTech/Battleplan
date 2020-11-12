@@ -7,6 +7,7 @@
 #include <QAction>
 #include <QErrorMessage>
 #include <QDoubleSpinBox>
+#include <QLabel>
 
 #include "gamemap.h"
 #include "network/battleclient.h"
@@ -45,6 +46,10 @@ private slots:
 
 	void on_actionLoad_triggered();
 
+	void onServerConnect();
+
+	void onServerDisconnect();
+
 private:
 	Ui::MainWindow *ui;
 
@@ -65,5 +70,7 @@ private:
 	BattleClient* mpBattleClient;
 
 	QErrorMessage noMapOnConnectError;
+
+	QLabel mpConnectionStatus;
 };
 #endif // MAINWINDOW_H

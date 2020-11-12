@@ -76,6 +76,7 @@ void BattleClient::updateLocalState(State::GameState aState)
 
 void BattleClient::connectToServer(const QUrl &url)
 {
+	emit closed();
 	m_url = url;
 	connect(&m_webSocket, &QWebSocket::connected, this, &BattleClient::onConnected);
 	connect(&m_webSocket, SIGNAL(connected()), this, SIGNAL(connected()));
