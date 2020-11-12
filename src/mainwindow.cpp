@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QLabel>
 #include <QColorDialog>
+#include <QBuffer>
 
 #include "serverconnectdialog.h"
 #include "newplayerdialog.h"
@@ -94,13 +95,28 @@ void MainWindow::on_actionNew_Map_triggered()
 			mpGameMap = new GameMap(ui->centralwidget);
 		}
 
-			fileNames = dialog.selectedFiles();
-			QString stylesheet = QString("GameMap { background-image:url(\"%1\"); background-repeat: no-repeat; }").arg(fileNames[0]);
-			mpGameMap->setStyleSheet(stylesheet);
-			mpGameMap->show();
-			connectMapSignals();
-			initializeState();
+		fileNames = dialog.selectedFiles();
+		QImage selectedImage(fileNames[0]);
+		setMapImage(selectedImage);
+		mpGameMap->setAutoFillBackground(true);
+		mpGameMap->show();
+		connectMapSignals();
+
+		QByteArray ba;
+		QDataStream stream(&ba, QIODevice::WriteOnly);
+		stream << selectedImage;
+		mpBattleClient->initializeMap(ba);
 	}
+}
+
+void MainWindow::setMapImage(QImage img)
+{
+	QPixmap background;
+	background.convertFromImage(img);
+	QPalette palette;
+	palette.setBrush(QPalette::Background, background);
+	mpGameMap->setPalette(palette);
+	mpGameMap->update();
 }
 
 void MainWindow::openColorDialog()
@@ -120,6 +136,7 @@ void MainWindow::connectMapSignals()
 	connect(mpGameMap, SIGNAL(gridVOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetY(int)));
 	connect(mpGameMap, SIGNAL(playersChanged(QVector<Player*>)), mpBattleClient, SLOT(updatePlayers(QVector<Player*>)));
 	connect(mpBattleClient, SIGNAL(stateUpdateFromServer(State::GameState)), this, SLOT(updateStateFromServer(State::GameState)));
+	connect(mpBattleClient, SIGNAL(mapUpdateFromServer(QImage)), this, SLOT(setMapImage(QImage)));
 }
 
 void MainWindow::on_actionAdd_Player_triggered()

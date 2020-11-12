@@ -25,6 +25,7 @@ public:
 	~MainWindow();
 
 private slots:
+	void setMapImage(QImage img);
 	void on_actionNew_Map_triggered();
 	void openColorDialog();
 

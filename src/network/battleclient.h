@@ -68,12 +68,15 @@ public:
 	void connectToServer(const QUrl &url);
 	void disconnect();
 
+	void initializeMap(QByteArray mapData);
+
 	State::GameState getState() const;
 
 Q_SIGNALS:
 	void closed();
 	void connected();
 
+	void mapUpdateFromServer(QImage img);
 	void stateUpdateFromServer(State::GameState newState);
 
 public Q_SLOTS:
@@ -89,9 +92,43 @@ private Q_SLOTS:
 private:
     QWebSocket m_webSocket;
     QUrl m_url;
-    bool m_debug;
 	State::GameState state;
 	void sendState();
+
+	enum MsgType {
+		MAP,
+		STATE
+	};
+
+	struct BattleMessage {
+		MsgType type;
+		QByteArray data;
+
+		QByteArray serialize()
+		{
+			QByteArray byteArray;
+
+			QDataStream stream(&byteArray, QIODevice::WriteOnly);
+
+			stream << type;
+			stream << data;
+
+			return byteArray;
+		}
+
+		BattleMessage deserialize(const QByteArray& byteArray)
+		{
+			QDataStream stream(byteArray);
+			BattleMessage msg;
+
+			stream >> msg.type
+					>> msg.data;
+			return msg;
+		}
+
+	};
+
+	void sendBattleMessage(BattleMessage msg);
 };
 
 #endif // BattleClient_H

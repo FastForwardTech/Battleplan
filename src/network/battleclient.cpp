@@ -89,6 +89,14 @@ void BattleClient::disconnect()
 	m_webSocket.close();
 }
 
+void BattleClient::initializeMap(QByteArray mapData)
+{
+	BattleMessage msg;
+	msg.type = MAP;
+	msg.data = mapData;
+	sendBattleMessage(msg);
+}
+
 void BattleClient::updateGridOffsetX(int aOffset)
 {
 	state.gridOffsetX = aOffset;
@@ -133,10 +141,29 @@ void BattleClient::onConnected()
 }
 
 void BattleClient::onBinaryMessageReceived(QByteArray data)
-{
-	State::GameState state;
-	state = state.deserialize(data);
-	emit stateUpdateFromServer(state);
+{	
+	BattleMessage msg;
+	msg = msg.deserialize(data);
+	fflush(stdout);
+	if (msg.type == MAP)
+	{
+		// update map
+		QImage img;
+		QDataStream stream(msg.data);
+		stream >> img;
+		emit mapUpdateFromServer(img);
+	}
+	else if (msg.type == STATE)
+	{
+		// update state
+		State::GameState state;
+		state = state.deserialize(msg.data);
+		emit stateUpdateFromServer(state);
+	}
+	else
+	{
+		printf("Unknown message type: %d\n", msg.type);
+	}
 }
 
 State::GameState BattleClient::getState() const
@@ -146,5 +173,13 @@ State::GameState BattleClient::getState() const
 
 void BattleClient::sendState()
 {
-	m_webSocket.sendBinaryMessage(state.serialize());
+	BattleMessage msg;
+	msg.type = STATE;
+	msg.data = state.serialize();
+	sendBattleMessage(msg);
+}
+
+void BattleClient::sendBattleMessage(BattleClient::BattleMessage msg)
+{
+	m_webSocket.sendBinaryMessage(msg.serialize());
 }
