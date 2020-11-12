@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 	mpBattleClient = new BattleClient();
 
+
+
 	mpToolbar = new QToolBar("Tools");
 	this->addToolBar(Qt::RightToolBarArea, mpToolbar);
 
@@ -49,6 +51,11 @@ MainWindow::MainWindow(QWidget *parent)
 	mpToolbar->addSeparator();
 	mpToolbar->addAction(mpChangeGridColor);
 	mpToolbar->setStyleSheet("background-color: white;");
+
+	mpGameMap = new GameMap(ui->centralwidget);
+	mpGameMap->setAutoFillBackground(true);
+	mpGameMap->hide();
+	connectMapSignals();
 
 	// set up the connection status indicator
 	mpConnectionStatus.resize(15, 15);
@@ -90,17 +97,9 @@ void MainWindow::on_actionNew_Map_triggered()
 	QStringList fileNames;
 	if (dialog.exec())
 	{
-		if (mpGameMap == nullptr)
-		{
-			mpGameMap = new GameMap(ui->centralwidget);
-		}
-
 		fileNames = dialog.selectedFiles();
 		QImage selectedImage(fileNames[0]);
 		setMapImage(selectedImage);
-		mpGameMap->setAutoFillBackground(true);
-		mpGameMap->show();
-		connectMapSignals();
 
 		QByteArray ba;
 		QDataStream stream(&ba, QIODevice::WriteOnly);
@@ -116,6 +115,7 @@ void MainWindow::setMapImage(QImage img)
 	QPalette palette;
 	palette.setBrush(QPalette::Background, background);
 	mpGameMap->setPalette(palette);
+	mpGameMap->show();
 	mpGameMap->update();
 }
 
@@ -129,7 +129,7 @@ void MainWindow::connectMapSignals()
 	connect(mpGridSpinBox, SIGNAL(valueChanged(double)), mpGameMap, SLOT(changeGridSize(qreal)));
 	connect(mpGridHOffset, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridHOffset(int)));
 	connect(mpGridVOffset, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridVOffset(int)));
-    connect(mpChangeGridColor, SIGNAL(triggered()), this, SLOT(openColorDialog()));
+	connect(mpChangeGridColor, SIGNAL(triggered()), this, SLOT(openColorDialog()));
 
 	connect(mpGameMap, SIGNAL(gridSizeChanged(qreal)), mpBattleClient, SLOT(updateGridStep(qreal)));
 	connect(mpGameMap, SIGNAL(gridHOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetX(int)));
@@ -156,7 +156,7 @@ void MainWindow::on_actionConnect_triggered()
 	}
 	else
 	{
-		noMapOnConnectError.showMessage("You must load a map before connecting to a server");
+		noMapOnConnectError.showMessage("No game map was detected");
 	}
 }
 
