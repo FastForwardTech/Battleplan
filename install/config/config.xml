@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>Battleplan</Name>
+    <Version>1.0.0</Version>
+    <Title>Battleplan Installer</Title>
+    <Publisher>Fast Forward Tech</Publisher>
+    <StartMenuDir>Battleplan</StartMenuDir>
+    <TargetDir>@ApplicationsDir@/Battleplan</TargetDir>
+</Installer>

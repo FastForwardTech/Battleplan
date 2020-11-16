@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Battleplan Client</DisplayName>
+    <Description>The client application used to connect to a server.</Description>
+    <Version>0.1.0-1</Version>
+    <ReleaseDate>2010-09-21</ReleaseDate>
+	<Script>installscript.qs</Script>
+    <Licenses>
+        <License name="GNU General Public License v3.0 Agreement" file="license.txt" />
+    </Licenses>
+    <Default>true</Default>
+</Package>

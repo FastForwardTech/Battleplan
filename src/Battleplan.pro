@@ -31,3 +31,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     res.qrc
+
+uninstall.path = $$OUT_PWD/release/scripts
+uninstall.files += $$PWD/scripts/*
+
+INSTALLS += uninstall
