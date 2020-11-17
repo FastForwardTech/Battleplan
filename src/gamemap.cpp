@@ -45,6 +45,8 @@ void GameMap::paintEvent(QPaintEvent *event)
 	style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 	QWidget::paintEvent(event);
 
+	painter.drawImage(0, 0, backgroundImage);
+
 	painter.setPen(mGridColor);
 	const QRectF rect = event->rect();
 	// draw horizontal grid lines
@@ -218,6 +220,11 @@ void GameMap::keyPressEvent(QKeyEvent *event)
 	{
 		QApplication::sendEvent(player, event);
 	}
+}
+
+void GameMap::setBackgroundImage(const QImage &value)
+{
+	backgroundImage = value;
 }
 
 void GameMap::ShowContextMenu(const QPoint &pos)

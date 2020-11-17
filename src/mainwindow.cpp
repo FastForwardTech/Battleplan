@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
 	mpToolbar->setStyleSheet("background-color: white;");
 
 	mpGameMap = new GameMap(ui->centralwidget);
-	mpGameMap->setAutoFillBackground(true);
+	mpGameMap->setAutoFillBackground(false);
 	mpGameMap->hide();
 	connectMapSignals();
 
@@ -110,11 +110,7 @@ void MainWindow::on_actionNew_Map_triggered()
 
 void MainWindow::setMapImage(QImage img)
 {
-	QPixmap background;
-	background.convertFromImage(img);
-	QPalette palette;
-	palette.setBrush(QPalette::Background, background);
-	mpGameMap->setPalette(palette);
+	mpGameMap->setBackgroundImage(img);
 	mpGameMap->show();
 	mpGameMap->update();
 }

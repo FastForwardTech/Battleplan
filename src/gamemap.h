@@ -23,6 +23,8 @@ public:
 
 	void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
+	void setBackgroundImage(const QImage &value);
+
 signals:
 	void gridSizeChanged(qreal aSize);
 	void gridHOffsetChanged(int aOffset);
@@ -62,6 +64,7 @@ private:
 	QPoint mRubberBandOrigin;
 	QPoint mEventPos;
 	QVector<Player*> mPlayerSelection;
+	QImage backgroundImage;
 
 private slots:
 	void ShowContextMenu(const QPoint& pos);
