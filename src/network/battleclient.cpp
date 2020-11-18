@@ -91,9 +91,15 @@ void BattleClient::disconnect()
 
 void BattleClient::initializeMap(QByteArray mapData)
 {
+	mMapData = mapData;
+	sendMapData();
+}
+
+void BattleClient::sendMapData()
+{
 	BattleMessage msg;
 	msg.type = MAP;
-	msg.data = mapData;
+	msg.data = mMapData;
 	sendBattleMessage(msg);
 }
 

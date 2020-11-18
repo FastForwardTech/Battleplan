@@ -271,6 +271,7 @@ void MainWindow::sendPlayerUpdate()
 void MainWindow::on_actionStart_Game_triggered()
 {
 	initializeState();
+	mpBattleClient->sendMapData();
 }
 
 void MainWindow::connectToServer(QString address, int port)

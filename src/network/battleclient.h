@@ -72,6 +72,7 @@ public:
 
 	State::GameState getState() const;
 
+	void sendMapData();
 Q_SIGNALS:
 	void closed();
 	void connected();
@@ -91,8 +92,9 @@ private Q_SLOTS:
 
 private:
     QWebSocket m_webSocket;
-    QUrl m_url;
+	QUrl m_url;
 	State::GameState state;
+	QByteArray mMapData;
 	void sendState();
 
 	enum MsgType {
