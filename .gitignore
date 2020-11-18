@@ -1,4 +1,4 @@
 Battleplan.pro.user
 build/
-install/Battleplan.exe
-install/packages.net.fastforwardtech.battleplan/data/release.7z
+install/BattleplanInstall.exe
+install/packages/net.fastforwardtech.battleplan/data/release.7z
