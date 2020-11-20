@@ -16,7 +16,7 @@ public:
     ~ServerConnectDialog();
 
 signals:
-    void connectToServer(QString address, int  port);
+	void connectToServer(QString code);
 
 private slots:
     void on_buttonBox_accepted();

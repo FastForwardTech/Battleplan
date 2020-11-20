@@ -65,7 +65,7 @@ public:
 	void initializeState(State::GameState aState);
 	// same thing as initializeState without sending over network
 	void updateLocalState(State::GameState aState);
-	void connectToServer(const QUrl &url);
+	void connectToServer(const QString code);
 	void disconnect();
 
 	void initializeMap(QByteArray mapData);
@@ -96,6 +96,7 @@ private:
 	State::GameState state;
 	QByteArray mMapData;
 	void sendState();
+	int convertCodeToPort(QString code);
 
 	enum MsgType {
 		MAP,

@@ -147,7 +147,7 @@ void MainWindow::on_actionConnect_triggered()
 	if (mpGameMap != nullptr)
 	{
         ServerConnectDialog dialog;
-        connect(&dialog, SIGNAL(connectToServer(QString, int)), this, SLOT(connectToServer(QString, int)));
+		connect(&dialog, SIGNAL(connectToServer(QString)), this, SLOT(connectToServer(QString)));
         dialog.exec();
 	}
 	else
@@ -274,10 +274,9 @@ void MainWindow::on_actionStart_Game_triggered()
 	mpBattleClient->sendMapData();
 }
 
-void MainWindow::connectToServer(QString address, int port)
+void MainWindow::connectToServer(QString code)
 {
-    QString connectStr = QString("ws://%1:%2").arg(address).arg(port);
-	mpBattleClient->connectToServer(QUrl(connectStr));
+	mpBattleClient->connectToServer(code);
 }
 
 void MainWindow::on_actionSave_triggered()

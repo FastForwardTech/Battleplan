@@ -41,7 +41,7 @@ private slots:
 
     void on_actionStart_Game_triggered();
 
-    void connectToServer(QString address, int port);
+	void connectToServer(QString code);
 
 	void on_actionSave_triggered();
 

@@ -15,5 +15,5 @@ ServerConnectDialog::~ServerConnectDialog()
 
 void ServerConnectDialog::on_buttonBox_accepted()
 {
-    emit connectToServer(ui->serverAddress->text(), ui->portNumber->text().toInt());
+	emit connectToServer(ui->roomCode->text());
 }

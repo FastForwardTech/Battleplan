@@ -74,14 +74,16 @@ void BattleClient::updateLocalState(State::GameState aState)
 	state = aState;
 }
 
-void BattleClient::connectToServer(const QUrl &url)
+void BattleClient::connectToServer(const QString code)
 {
 	emit closed();
-	m_url = url;
+	int port = convertCodeToPort(code);
+	QString connectString = QString("ws://battleplan.fastforwardtech.net:%1").arg(port);
+	m_url = QUrl(connectString);
 	connect(&m_webSocket, &QWebSocket::connected, this, &BattleClient::onConnected);
 	connect(&m_webSocket, SIGNAL(connected()), this, SIGNAL(connected()));
 	connect(&m_webSocket, &QWebSocket::disconnected, this, &BattleClient::closed);
-	m_webSocket.open(url);
+	m_webSocket.open(m_url);
 }
 
 void BattleClient::disconnect()
@@ -183,6 +185,20 @@ void BattleClient::sendState()
 	msg.type = STATE;
 	msg.data = state.serialize();
 	sendBattleMessage(msg);
+}
+
+int BattleClient::convertCodeToPort(QString code)
+{
+	int ret = 0;
+	code = code.toLower();
+	for (auto i = code.constBegin(); i < code.constEnd(); i++)
+	{
+		ushort unicode = i->unicode();
+		int position = unicode - QChar('a').unicode() + 1;
+		ret *= 10;
+		ret += position;
+	}
+	return ret;
 }
 
 void BattleClient::sendBattleMessage(BattleClient::BattleMessage msg)
