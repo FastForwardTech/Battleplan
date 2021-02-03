@@ -4,5 +4,6 @@
         <file>res/add.svg</file>
         <file>res/page-end.png</file>
         <file>res/resize.jpg</file>
+        <file>res/bloodied.png</file>
     </qresource>
 </RCC>

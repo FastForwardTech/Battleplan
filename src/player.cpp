@@ -12,6 +12,7 @@ Player::Player(QWidget *parent) : QWidget(parent)
 	this->setMouseTracking(true);
 	this->setContextMenuPolicy(Qt::CustomContextMenu);
 	this->setFocusPolicy(Qt::ClickFocus);
+	mBloodiedIndicator.load(":/res/bloodied.png");
 	connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
 }
 
@@ -179,6 +180,10 @@ void Player::paintEvent(QPaintEvent *)
 		brush = QBrush(mColor, Qt::Dense5Pattern);
 	}
 	painter.fillRect(this->rect(), brush);
+	if (mBloodied == true)
+	{
+		painter.drawPixmap(this->rect(), mBloodiedIndicator);
+	}
 
 	clippingRegion = QRegion(this->rect());
 
@@ -216,6 +221,7 @@ int Player::getCurrentHitpoints() const
 void Player::setCurrentHitpoints(int currentHitpoints)
 {
 	mCurrentHitpoints = currentHitpoints;
+	checkAndUpdateBloodiedState();
 	emit playerUpdated();
 }
 
@@ -227,6 +233,7 @@ int Player::getMaxHitpoints() const
 void Player::setMaxHitpoints(int maxHitpoints)
 {
 	mMaxHitpoints = maxHitpoints;
+	checkAndUpdateBloodiedState();
 	emit playerUpdated();
 }
 
@@ -250,4 +257,16 @@ void Player::setColor(const QColor &color)
 {
 	mColor = color;
 	emit playerUpdated();
+}
+
+void Player::checkAndUpdateBloodiedState()
+{
+	if (mCurrentHitpoints <= mMaxHitpoints / 2)
+	{
+		mBloodied = true;
+	}
+	else
+	{
+		mBloodied = false;
+	}
 }

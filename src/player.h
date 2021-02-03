@@ -56,12 +56,15 @@ private:
 	int mMaxHitpoints = 10;
 	int mCurrentHitpoints = 10;
 	bool selected = false;
+	bool mBloodied = false;
 	QVector<QString> mConditions;
 
 	QRegion clippingRegion;
 	void mouseDoubleClick(QMouseEvent *);
+	void checkAndUpdateBloodiedState();
 
 	QPoint mGridPos;
+	QPixmap mBloodiedIndicator;
 
 private slots:
 	void ShowContextMenu(const QPoint& pos);
