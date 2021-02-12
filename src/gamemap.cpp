@@ -8,8 +8,6 @@
 #include <QFrame>
 #include <QMenu>
 
-#include "playereditdialog.h"
-
 GameMap::GameMap(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::GameMap)

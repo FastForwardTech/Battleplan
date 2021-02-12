@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QColorDialog>
 #include <QBuffer>
+#include <QGridLayout>
 
 #include "serverconnectdialog.h"
 #include "newplayerdialog.h"
@@ -15,13 +16,10 @@ MainWindow::MainWindow(QWidget *parent)
 	, ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+	QGridLayout* layout = new QGridLayout();
+	ui->centralwidget->setLayout(layout);
 
 	mpBattleClient = new BattleClient();
-
-
-
-	mpToolbar = new QToolBar("Tools");
-	this->addToolBar(Qt::RightToolBarArea, mpToolbar);
 
 	mpGridSpinBox = new QDoubleSpinBox();
 	mpGridSpinBox->setValue(20);
@@ -40,21 +38,26 @@ MainWindow::MainWindow(QWidget *parent)
 	mpGridVOffset->setMinimum(0);
 	mpGridVOffset->setMaximum(100);
 
-	mpChangeGridColor = new QAction("Change Grid Color");
+	mpChangeGridColor = new QPushButton("Change Grid Color");
 
-	mpToolbar->addWidget(new QLabel("Grid Size"));
-	mpToolbar->addWidget(mpGridSpinBox);
-	mpToolbar->addWidget(new QLabel("Grid Horizontal Offset"));
-	mpToolbar->addWidget(mpGridHOffset);
-	mpToolbar->addWidget(new QLabel("Grid Vertical Offset"));
-	mpToolbar->addWidget(mpGridVOffset);
-	mpToolbar->addSeparator();
-	mpToolbar->addAction(mpChangeGridColor);
-	mpToolbar->setStyleSheet("background-color: white;");
+	mpInitiativeList = new PlayerInitiativeList(ui->centralwidget);
 
-	mpGameMap = new GameMap(ui->centralwidget);
+	mpGameMap = new GameMap();
 	mpGameMap->setAutoFillBackground(false);
 	mpGameMap->hide();
+
+	layout->setColumnStretch(0, 1);
+	layout->setRowStretch(7, 1);
+	layout->addWidget(mpGameMap, 0, 0, 8, 1);
+	layout->addWidget(new QLabel("Grid Size"), 0, 1);
+	layout->addWidget(mpGridSpinBox, 1, 1);
+	layout->addWidget(new QLabel("Grid Horizontal Offset"), 2, 1);
+	layout->addWidget(mpGridHOffset, 3, 1);
+	layout->addWidget(new QLabel("Grid Vertical Offset"), 4, 1);
+	layout->addWidget(mpGridVOffset, 5, 1);
+	layout->addWidget(mpChangeGridColor, 6, 1);
+	layout->addWidget(mpInitiativeList, 7, 1);
+
 	connectMapSignals();
 
 	// set up the connection status indicator
@@ -78,12 +81,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+	delete mpInitiativeList;
 	delete mpChangeGridColor;
 	delete mpGridVOffset;
 	delete mpGridHOffset;
 	delete mpGridSpinBox;
 	delete mpBattleClient;
-	delete mpToolbar;
 	delete mpGameMap;
 	delete ui;
 }
@@ -125,12 +128,13 @@ void MainWindow::connectMapSignals()
 	connect(mpGridSpinBox, SIGNAL(valueChanged(double)), mpGameMap, SLOT(changeGridSize(qreal)));
 	connect(mpGridHOffset, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridHOffset(int)));
 	connect(mpGridVOffset, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridVOffset(int)));
-	connect(mpChangeGridColor, SIGNAL(triggered()), this, SLOT(openColorDialog()));
+	connect(mpChangeGridColor, SIGNAL(pressed()), this, SLOT(openColorDialog()));
 
 	connect(mpGameMap, SIGNAL(gridSizeChanged(qreal)), mpBattleClient, SLOT(updateGridStep(qreal)));
 	connect(mpGameMap, SIGNAL(gridHOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetX(int)));
 	connect(mpGameMap, SIGNAL(gridVOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetY(int)));
 	connect(mpGameMap, SIGNAL(playersChanged(QVector<Player*>)), mpBattleClient, SLOT(updatePlayers(QVector<Player*>)));
+	connect(mpGameMap, SIGNAL(playersChanged(QVector<Player*>)), mpInitiativeList, SLOT(playersChanged(QVector<Player*>)));
 	connect(mpBattleClient, SIGNAL(stateUpdateFromServer(State::GameState)), this, SLOT(updateStateFromServer(State::GameState)));
 	connect(mpBattleClient, SIGNAL(mapUpdateFromServer(QImage)), this, SLOT(setMapImage(QImage)));
 }
@@ -175,6 +179,7 @@ void MainWindow::initializeState(bool local)
 		player.green = gamePlayer->color().green();
 		player.currHp = gamePlayer->getCurrentHitpoints();
 		player.maxHp = gamePlayer->getMaxHitpoints();
+		player.initiative = gamePlayer->getInitiative();
 		for (int j = 0; j < gamePlayer->getConditions().size(); j++)
 		{
 			auto condition = gamePlayer->getConditions().at(j);
@@ -222,6 +227,7 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 		player->setMaxHitpoints(newPlayer.maxHp);
 		player->setCurrentHitpoints(newPlayer.currHp);
 		player->setConditions(newPlayer.conditions);
+		player->setInitiative(newPlayer.initiative);
 		player->blockSignals(false);
 	}
 
@@ -251,6 +257,7 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 			player->setMaxHitpoints(newPlayer.maxHp);
 			player->setCurrentHitpoints(newPlayer.currHp);
 			player->setConditions(newPlayer.conditions);
+			player->setInitiative(newPlayer.initiative);
 			player->blockSignals(false);
 			mpGameMap->blockSignals(true);
 			mpGameMap->addPlayer(player);

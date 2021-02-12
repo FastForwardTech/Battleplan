@@ -19,6 +19,7 @@ struct Player {
 	quint8 blue;
 	quint8 maxHp;
 	quint8 currHp;
+	quint8 initiative;
 	QVector<QString> conditions;
 
 	friend QDataStream& operator <<(QDataStream &out, const Player &p)
@@ -41,6 +42,7 @@ struct Player {
 		dataStream >> blue;
 		dataStream >> maxHp;
 		dataStream >> currHp;
+		dataStream >> initiative;
 		dataStream >> conditions;
 		return dataStream;
 	}
@@ -55,6 +57,7 @@ struct Player {
 		dataStream << blue;
 		dataStream << maxHp;
 		dataStream << currHp;
+		dataStream << initiative;
 		dataStream << conditions;
 		return dataStream;
 	}

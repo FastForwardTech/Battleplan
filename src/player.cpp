@@ -30,6 +30,17 @@ bool Player::event(QEvent* e)
 	return QWidget::event(e);
 }
 
+int Player::getInitiative() const
+{
+	return mInitiative;
+}
+
+void Player::setInitiative(int initiative)
+{
+	mInitiative = initiative;
+	emit playerUpdated();
+}
+
 void Player::setSelected(bool value)
 {
 	selected = value;

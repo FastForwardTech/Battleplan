@@ -24,6 +24,7 @@ void PlayerEditDialog::setPlayer(Player *apPlayer)
 	ui->activeConditionsList->addItems(apPlayer->getConditions().toList());
 	ui->posX->setValue(apPlayer->getGridPos().x());
 	ui->posY->setValue(apPlayer->getGridPos().y());
+	ui->initiativeSpinbox->setValue(apPlayer->getInitiative());
 	mColor = apPlayer->color();
 	for(QString text: apPlayer->getConditions())
 	{
@@ -51,6 +52,7 @@ void PlayerEditDialog::on_buttonBox_accepted()
 		mpPlayer->setGridPos(ui->posX->value(), ui->posY->value());
 		mpPlayer->setConditions(conditions);
 		mpPlayer->setColor(mColor);
+		mpPlayer->setInitiative(ui->initiativeSpinbox->value());
 	}
 }
 

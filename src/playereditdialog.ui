@@ -228,6 +228,26 @@
     </layout>
    </item>
    <item>
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>Initiative</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item alignment="Qt::AlignHCenter">
+    <widget class="QSpinBox" name="initiativeSpinbox">
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::PlusMinus</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="pushButton_Color">
      <property name="text">
       <string>Choose Color</string>

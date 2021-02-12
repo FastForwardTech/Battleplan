@@ -41,6 +41,9 @@ public:
 
 	void setSelected(bool value);
 
+	int getInitiative() const;
+	void setInitiative(int initiative);
+
 signals:
 	void playerUpdated();
 	void requestDelete(Player* player);
@@ -55,6 +58,7 @@ private:
 	QString mName = "Player Name";
 	int mMaxHitpoints = 10;
 	int mCurrentHitpoints = 10;
+	int mInitiative = 1;
 	bool selected = false;
 	bool mBloodied = false;
 	QVector<QString> mConditions;

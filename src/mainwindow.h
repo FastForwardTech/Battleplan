@@ -2,14 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QToolBar>
 #include <QSlider>
-#include <QAction>
 #include <QErrorMessage>
 #include <QDoubleSpinBox>
 #include <QLabel>
+#include <QPushButton>
 
 #include "gamemap.h"
+#include "playerinitiativelist.h"
 #include "network/battleclient.h"
 
 QT_BEGIN_NAMESPACE
@@ -56,15 +56,13 @@ private:
 
 	GameMap* mpGameMap = nullptr;
 
-	QToolBar* mpToolbar;
-
 	QDoubleSpinBox* mpGridSpinBox;
 
 	QSlider* mpGridHOffset;
 
 	QSlider* mpGridVOffset;
 
-	QAction* mpChangeGridColor;
+	QPushButton* mpChangeGridColor;
 
 	void connectMapSignals();
 
@@ -73,5 +71,7 @@ private:
 	QErrorMessage noMapOnConnectError;
 
 	QLabel mpConnectionStatus;
+
+	PlayerInitiativeList* mpInitiativeList;
 };
 #endif // MAINWINDOW_H

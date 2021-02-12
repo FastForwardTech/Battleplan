@@ -19,7 +19,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">MainWindow {
-	background-image: url(:/res/abstract_bg.jpg);
+	background-color: rgb(128, 128, 128);
 }
 color: white;</string>
   </property>
