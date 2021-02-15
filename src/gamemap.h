@@ -8,6 +8,7 @@
 #include <QRubberBand>
 
 #include "player.h"
+#include "positionmarker.h"
 
 namespace Ui {
 class GameMap;
@@ -30,6 +31,7 @@ signals:
 	void gridHOffsetChanged(int aOffset);
 	void gridVOffsetChanged(int aOffset);
 	void playersChanged(QVector<Player*> players);
+	void markerAdded(PositionMarker* marker);
 
 public slots:
 	void changeGridSize(qreal size);
@@ -39,9 +41,11 @@ public slots:
 	void changeGridColor(QColor color);
 	void addPlayer(Player* apPlayer);
 	void removePlayer(Player* apPlayer);
+	void addMarker(PositionMarker* apMarker);
 	void EmitPlayerUpdate();
-	int gridSize();
+	double gridSize();
 	QVector<Player*> getPlayers();
+	QVector<PositionMarker*> getMarkers();
 
 protected:
 	bool eventFilter(QObject* obj, QEvent* event) override;
@@ -55,7 +59,8 @@ private:
 	QSizeGrip* mpSizeGrip = nullptr;
 	QColor mGridColor = Qt::white;
 	QVector<Player*> mPlayers;
-	qreal gridStep = 20;
+	QVector<PositionMarker*> mMarkers;
+	double gridStep = 20;
 	int gridHOffset = 0;
 	int gridVOffset = 0;
 	QRubberBand* mpSelectionBox = nullptr;
@@ -68,6 +73,7 @@ private:
 
 private slots:
 	void ShowContextMenu(const QPoint& pos);
+	void RemoveExpiredMarker();
 };
 
 #endif // GAMEMAP_H

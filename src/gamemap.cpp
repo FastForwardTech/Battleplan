@@ -7,6 +7,7 @@
 #include <QSizeGrip>
 #include <QFrame>
 #include <QMenu>
+#include <QTimer>
 
 GameMap::GameMap(QWidget *parent) :
 	QWidget(parent),
@@ -69,6 +70,13 @@ void GameMap::paintEvent(QPaintEvent *event)
 		p->resize(gridStep, gridStep);
 	}
 
+	// align markers based on current grid paramters
+	for (PositionMarker* m: mMarkers)
+	{
+		m->move((m->getGridPos().x() * gridStep) + gridHOffset, (m->getGridPos().y() * gridStep) + gridVOffset);
+		m->resize(gridStep, gridStep);
+	}
+
 	// do this after we draw children, so it stays on top
 	if (mpPlayerUnderMouse != nullptr)
 	{
@@ -111,7 +119,16 @@ void GameMap::removePlayer(Player* apPlayer)
 	EmitPlayerUpdate();
 }
 
-int GameMap::gridSize()
+void GameMap::addMarker(PositionMarker *apMarker)
+{
+	mMarkers.append(apMarker);
+	apMarker->setParent(this);
+	apMarker->show();
+	QTimer::singleShot(5000, this, SLOT(RemoveExpiredMarker()));
+	emit markerAdded(apMarker);
+}
+
+double GameMap::gridSize()
 {
 	return gridStep;
 }
@@ -119,6 +136,11 @@ int GameMap::gridSize()
 QVector<Player *> GameMap::getPlayers()
 {
 	return mPlayers;
+}
+
+QVector<PositionMarker *> GameMap::getMarkers()
+{
+	return mMarkers;
 }
 
 void GameMap::changeGridSize(qreal size)
@@ -233,6 +255,9 @@ void GameMap::ShowContextMenu(const QPoint &pos)
 	QAction addAction("Add Player Here");
 	myMenu.addAction(&addAction);
 
+	QAction markAction("Place Marker");
+	myMenu.addAction(&markAction);
+
 	QAction* selectedItem = myMenu.exec(globalPos);
 	if (selectedItem == &addAction)
 	{
@@ -242,10 +267,23 @@ void GameMap::ShowContextMenu(const QPoint &pos)
 		p->setGridPos((pos.x() - gridHOffset) / gridStep, (pos.y() - gridVOffset) / gridStep);
 		addPlayer(p);
 	}
+	else if (selectedItem == &markAction)
+	{
+		PositionMarker* marker = new PositionMarker();
+		// if the grid offset has shifted, we need to subtract that shift from the add pos
+		// to get the actual square
+		marker->setGridPos((pos.x() - gridHOffset) / gridStep, (pos.y() - gridVOffset) / gridStep);
+		addMarker(marker);
+	}
 	else
 	{
 		// nothing was chosen
 	}
+}
+
+void GameMap::RemoveExpiredMarker()
+{
+	delete mMarkers.takeFirst();
 }
 
 void GameMap::EmitPlayerUpdate()

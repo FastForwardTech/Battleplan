@@ -51,6 +51,7 @@
 #define BattleClient_H
 
 #include <QObject>
+#include <positionmarker.h>
 #include <QtWebSockets/QWebSocket>
 #include "network/state.h"
 #include "player.h"
@@ -85,6 +86,7 @@ public Q_SLOTS:
 	void updateGridOffsetY(int aOffset);
 	void updateGridStep(qreal aStep);
 	void updatePlayers(QVector<Player*> aPlayers);
+	void addMarker(PositionMarker* aMarker);
 
 private Q_SLOTS:
     void onConnected();

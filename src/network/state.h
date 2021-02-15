@@ -63,12 +63,46 @@ struct Player {
 	}
 };
 
+struct Marker {
+
+	quint8 x;
+	quint8 y;
+	bool valid;
+
+	friend QDataStream& operator <<(QDataStream &out, const Marker &p)
+	{
+		return p.write(out);
+	}
+
+	friend QDataStream& operator >>(QDataStream &in, Marker &p)
+	{
+		return p.read(in);
+	}
+
+	QDataStream& read(QDataStream &dataStream)
+	{
+		dataStream >> x;
+		dataStream >> y;
+		dataStream >> valid;
+		return dataStream;
+	}
+
+	QDataStream& write(QDataStream &dataStream) const
+	{
+		dataStream << x;
+		dataStream << y;
+		dataStream << valid;
+		return dataStream;
+	}
+};
+
 struct GameState {
 	quint8 gridOffsetX;
 	quint8 gridOffsetY;
-	qreal gridStep;
+	double gridStep;
 	quint8 numPlayers;
 	QVector<Player> players;
+	Marker marker;
 
 	QByteArray serialize()
 	{
@@ -81,6 +115,7 @@ struct GameState {
 		stream << gridStep;
 		stream << numPlayers;
 		stream << players;
+		stream << marker;
 
 		return byteArray;
 	}
@@ -94,7 +129,8 @@ struct GameState {
 				>> state.gridOffsetY
 				>> state.gridStep
 				>> state.numPlayers
-				>> state.players;
+				>> state.players
+				>> state.marker;
 		return state;
 	}
 

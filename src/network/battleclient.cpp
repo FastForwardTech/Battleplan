@@ -126,6 +126,7 @@ void BattleClient::updateGridStep(qreal aStep)
 void BattleClient::updatePlayers(QVector<Player*> aPlayers)
 {
 	state.players.clear();
+	state.numPlayers = aPlayers.size();
 	for (Player* pPlayer: aPlayers)
 	{
 		State::Player player;
@@ -138,9 +139,21 @@ void BattleClient::updatePlayers(QVector<Player*> aPlayers)
 		player.maxHp = pPlayer->getMaxHitpoints();
 		player.currHp = pPlayer->getCurrentHitpoints();
 		player.conditions = pPlayer->getConditions();
+		player.initiative = pPlayer->getInitiative();
 		state.players.append(player);
 	}
 	sendState();
+}
+
+void BattleClient::addMarker(PositionMarker * aMarker)
+{
+	State::Marker marker;
+	marker.x = aMarker->getGridPos().x();
+	marker.y = aMarker->getGridPos().y();
+	marker.valid = true;
+	state.marker = marker;
+	sendState();
+	marker.valid = false;
 }
 
 void BattleClient::onConnected()

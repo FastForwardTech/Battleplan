@@ -77,6 +77,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(mpBattleClient, SIGNAL(closed()), this, SLOT(onServerDisconnect()));
 	connect(mpBattleClient, SIGNAL(connected()), this, SLOT(onServerConnect()));
+
+	initializeState(true);
 }
 
 MainWindow::~MainWindow()
@@ -135,6 +137,7 @@ void MainWindow::connectMapSignals()
 	connect(mpGameMap, SIGNAL(gridVOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetY(int)));
 	connect(mpGameMap, SIGNAL(playersChanged(QVector<Player*>)), mpBattleClient, SLOT(updatePlayers(QVector<Player*>)));
 	connect(mpGameMap, SIGNAL(playersChanged(QVector<Player*>)), mpInitiativeList, SLOT(playersChanged(QVector<Player*>)));
+	connect(mpGameMap, SIGNAL(markerAdded(PositionMarker*)), mpBattleClient, SLOT(addMarker(PositionMarker*)));
 	connect(mpBattleClient, SIGNAL(stateUpdateFromServer(State::GameState)), this, SLOT(updateStateFromServer(State::GameState)));
 	connect(mpBattleClient, SIGNAL(mapUpdateFromServer(QImage)), this, SLOT(setMapImage(QImage)));
 }
@@ -187,6 +190,13 @@ void MainWindow::initializeState(bool local)
 		}
 		state.players.append(player);
 	}
+
+	State::Marker marker;
+	marker.x = 0;
+	marker.y = 0;
+	marker.valid = false;
+	state.marker = marker;
+
 	if (local == true)
 	{
 		mpBattleClient->updateLocalState(state);
@@ -265,7 +275,17 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 		}
 	}
 
-	this->initializeState(true);
+	mpInitiativeList->playersChanged(mpGameMap->getPlayers());
+
+	// for position marker, we just add it when received. it should be automatically cleared from state when it expires
+	if (aNewState.marker.valid == true)
+	{
+		mpGameMap->blockSignals(true);
+		PositionMarker* marker = new PositionMarker();
+		marker->setGridPos(aNewState.marker.x, aNewState.marker.y);
+		mpGameMap->addMarker(marker);
+		mpGameMap->blockSignals(false);
+	}
 
 	repaint();
 }
