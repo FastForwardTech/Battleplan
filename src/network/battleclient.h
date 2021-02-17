@@ -91,6 +91,7 @@ public Q_SLOTS:
 private Q_SLOTS:
     void onConnected();
 	void onBinaryMessageReceived(QByteArray data);
+	void onTextMessageReceived(QString aMessage);
 
 private:
     QWebSocket m_webSocket;

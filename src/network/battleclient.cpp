@@ -159,6 +159,8 @@ void BattleClient::addMarker(PositionMarker * aMarker)
 void BattleClient::onConnected()
 {
 	connect(&m_webSocket, &QWebSocket::binaryMessageReceived, this, &BattleClient::onBinaryMessageReceived);
+	m_webSocket.sendTextMessage("New client");
+	connect(&m_webSocket, &QWebSocket::textMessageReceived, this, &BattleClient::onTextMessageReceived);
 }
 
 void BattleClient::onBinaryMessageReceived(QByteArray data)
@@ -184,6 +186,15 @@ void BattleClient::onBinaryMessageReceived(QByteArray data)
 	else
 	{
 		printf("Unknown message type: %d\n", msg.type);
+	}
+}
+
+void BattleClient::onTextMessageReceived(QString aMessage)
+{
+	if (aMessage == "New client")
+	{
+		sendMapData();
+		sendState();
 	}
 }
 

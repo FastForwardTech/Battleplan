@@ -285,7 +285,10 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 		marker->setGridPos(aNewState.marker.x, aNewState.marker.y);
 		mpGameMap->addMarker(marker);
 		mpGameMap->blockSignals(false);
+		aNewState.marker.valid = false;
 	}
+
+	mpBattleClient->updateLocalState(aNewState);
 
 	repaint();
 }
