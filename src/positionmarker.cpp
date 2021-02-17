@@ -4,6 +4,7 @@
 
 PositionMarker::PositionMarker(QWidget *parent) : Player(parent)
 {
+	this->setContextMenuPolicy(Qt::NoContextMenu);
 	animation = new QPropertyAnimation(this, "parcelDivision");
 	animation->setDuration(1600);
 	animation->setStartValue(5);
