@@ -298,12 +298,6 @@ void MainWindow::sendPlayerUpdate()
 	mpBattleClient->updatePlayers(mpGameMap->getPlayers());
 }
 
-void MainWindow::on_actionStart_Game_triggered()
-{
-	initializeState();
-	mpBattleClient->sendMapData();
-}
-
 void MainWindow::connectToServer(QString code)
 {
 	mpBattleClient->connectToServer(code);

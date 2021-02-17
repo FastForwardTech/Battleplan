@@ -39,8 +39,6 @@ private slots:
 
 	void sendPlayerUpdate();
 
-    void on_actionStart_Game_triggered();
-
 	void connectToServer(QString code);
 
 	void on_actionSave_triggered();
