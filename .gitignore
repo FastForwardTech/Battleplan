@@ -2,3 +2,8 @@ Battleplan.pro.user
 build/
 install/BattleplanInstall.exe
 install/packages/net.fastforwardtech.battleplan/data/release.7z
+*.jpg
+*.png
+*.txt
+*.pem
+*.rdp
