@@ -118,6 +118,12 @@ void BattleClient::updateGridOffsetY(int aOffset)
 	sendState();
 }
 
+void BattleClient::updateGridColor(QColor aColor)
+{
+	state.gridColor = aColor;
+	sendState();
+}
+
 void BattleClient::updateGridStep(qreal aStep)
 {
 	state.gridStep = aStep;

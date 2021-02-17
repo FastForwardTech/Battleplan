@@ -25,11 +25,13 @@ public:
 	void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 	void setBackgroundImage(const QImage &value);
+	QColor getGridColor();
 
 signals:
 	void gridSizeChanged(qreal aSize);
 	void gridHOffsetChanged(int aOffset);
 	void gridVOffsetChanged(int aOffset);
+	void gridColorChanged(QColor aColor);
 	void playersChanged(QVector<Player*> players);
 	void markerAdded(PositionMarker* marker);
 

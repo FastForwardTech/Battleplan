@@ -85,6 +85,7 @@ Q_SIGNALS:
 public Q_SLOTS:
 	void updateGridOffsetX(int aOffset);
 	void updateGridOffsetY(int aOffset);
+	void updateGridColor(QColor aColor);
 	void updateGridStep(qreal aStep);
 	void updatePlayers(QVector<Player*> aPlayers);
 	void addMarker(PositionMarker* aMarker);

@@ -132,6 +132,7 @@ void MainWindow::connectMapSignals()
 	connect(mpGridVOffset, SIGNAL(valueChanged(int)), mpGameMap, SLOT(changeGridVOffset(int)));
 	connect(mpChangeGridColor, SIGNAL(pressed()), this, SLOT(openColorDialog()));
 
+	connect(mpGameMap, SIGNAL(gridColorChanged(QColor)), mpBattleClient, SLOT(updateGridColor(QColor)));
 	connect(mpGameMap, SIGNAL(gridSizeChanged(qreal)), mpBattleClient, SLOT(updateGridStep(qreal)));
 	connect(mpGameMap, SIGNAL(gridHOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetX(int)));
 	connect(mpGameMap, SIGNAL(gridVOffsetChanged(int)), mpBattleClient, SLOT(updateGridOffsetY(int)));
@@ -168,6 +169,7 @@ void MainWindow::initializeState(bool local)
 	State::GameState state;
 	state.gridOffsetX = mpGridHOffset->value();
 	state.gridOffsetY = mpGridVOffset->value();
+	state.gridColor = mpGameMap->getGridColor();
 	state.gridStep = mpGameMap->gridSize();
 	state.numPlayers = mpGameMap->getPlayers().size();
 	for(int i = 0; i < mpGameMap->getPlayers().size(); i++)
@@ -222,6 +224,7 @@ void MainWindow::updateStateFromServer(State::GameState aNewState)
 	mpGameMap->changeGridSize(aNewState.gridStep);
 	mpGameMap->changeGridHOffset(aNewState.gridOffsetX);
 	mpGameMap->changeGridVOffset(aNewState.gridOffsetY);
+	mpGameMap->changeGridColor(aNewState.gridColor);
 	mpGameMap->blockSignals(false);
 
 	// update the existing players as far as there is a corresponding player in the state update

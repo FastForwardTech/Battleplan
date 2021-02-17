@@ -99,6 +99,7 @@ struct Marker {
 struct GameState {
 	quint8 gridOffsetX;
 	quint8 gridOffsetY;
+	QColor gridColor;
 	double gridStep;
 	quint8 numPlayers;
 	QVector<Player> players;
@@ -112,6 +113,7 @@ struct GameState {
 
 		stream << gridOffsetX;
 		stream << gridOffsetY;
+		stream << gridColor;
 		stream << gridStep;
 		stream << numPlayers;
 		stream << players;
@@ -127,6 +129,7 @@ struct GameState {
 
 		stream >> state.gridOffsetX
 				>> state.gridOffsetY
+				>> state.gridColor
 				>> state.gridStep
 				>> state.numPlayers
 				>> state.players

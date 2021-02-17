@@ -167,6 +167,7 @@ void GameMap::changeGridHOffset(int offset)
 void GameMap::changeGridColor(QColor color)
 {
 	mGridColor = color;
+	emit gridColorChanged(color);
 	update();
 }
 
@@ -245,6 +246,11 @@ void GameMap::keyPressEvent(QKeyEvent *event)
 void GameMap::setBackgroundImage(const QImage &value)
 {
 	backgroundImage = value;
+}
+
+QColor GameMap::getGridColor()
+{
+	return mGridColor;
 }
 
 void GameMap::ShowContextMenu(const QPoint &pos)
