@@ -155,6 +155,7 @@ void BattleClient::addMarker(PositionMarker * aMarker)
 	state.marker = marker;
 	sendState();
 	marker.valid = false;
+	state.marker.valid = false;
 }
 
 void BattleClient::onConnected()
