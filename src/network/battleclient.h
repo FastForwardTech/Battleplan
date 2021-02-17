@@ -51,6 +51,7 @@
 #define BattleClient_H
 
 #include <QObject>
+#include <QUuid>
 #include <positionmarker.h>
 #include <QtWebSockets/QWebSocket>
 #include "network/state.h"
@@ -109,6 +110,7 @@ private:
 	struct BattleMessage {
 		MsgType type;
 		QByteArray data;
+		QUuid source;
 
 		QByteArray serialize()
 		{
@@ -118,6 +120,7 @@ private:
 
 			stream << type;
 			stream << data;
+			stream << source;
 
 			return byteArray;
 		}
@@ -128,13 +131,16 @@ private:
 			BattleMessage msg;
 
 			stream >> msg.type
-					>> msg.data;
+					>> msg.data
+					>> msg.source;
 			return msg;
 		}
 
 	};
 
 	void sendBattleMessage(BattleMessage msg);
+
+	QUuid mQuuid;
 };
 
 #endif // BattleClient_H

@@ -56,6 +56,7 @@ QT_USE_NAMESPACE
 BattleClient::BattleClient(QObject *parent) :
 	QObject(parent)
 {
+	mQuuid = QUuid::createUuid();
 }
 
 BattleClient::~BattleClient()
@@ -167,6 +168,11 @@ void BattleClient::onBinaryMessageReceived(QByteArray data)
 {	
 	BattleMessage msg;
 	msg = msg.deserialize(data);
+	// this message was originally sent by this client; ignore it
+	if (msg.source == mQuuid)
+	{
+		return;
+	}
 	fflush(stdout);
 	if (msg.type == MAP)
 	{
@@ -227,5 +233,6 @@ int BattleClient::convertCodeToPort(QString code)
 
 void BattleClient::sendBattleMessage(BattleClient::BattleMessage msg)
 {
+	msg.source = mQuuid;
 	m_webSocket.sendBinaryMessage(msg.serialize());
 }
