@@ -74,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent)
 	this->statusBar()->addWidget(&mpConnectionStatus);
 	this->statusBar()->addPermanentWidget(new QLabel("Connection Status"));
 	this->statusBar()->addPermanentWidget(&mpConnectionStatus, 1);
+	this->statusBar()->addPermanentWidget(new QLabel(QString("Version %1").arg(VERSION_STRING, 0, 'f', 1)));
 
 	connect(mpBattleClient, SIGNAL(closed()), this, SLOT(onServerDisconnect()));
 	connect(mpBattleClient, SIGNAL(connected()), this, SLOT(onServerConnect()));
