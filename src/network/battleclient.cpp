@@ -49,6 +49,7 @@
 ****************************************************************************/
 #include "battleclient.h"
 #include <QtCore/QDebug>
+#include <QMessageBox>
 #include <utility>
 
 QT_USE_NAMESPACE
@@ -180,6 +181,12 @@ void BattleClient::onBinaryMessageReceived(QByteArray data)
 	{
 		return;
 	}
+	// received message version does not match expected version; ignore it
+	if (msg.msgVersion != version)
+	{
+		QMessageBox::warning(nullptr, "Version Mismatch", "Unexpected message format. Please ensure the same client versions are being used!");
+		return;
+	}
 	fflush(stdout);
 	if (msg.type == MAP)
 	{
@@ -241,5 +248,6 @@ int BattleClient::convertCodeToPort(QString code)
 void BattleClient::sendBattleMessage(BattleClient::BattleMessage msg)
 {
 	msg.source = mQuuid;
+	msg.msgVersion = version;
 	m_webSocket.sendBinaryMessage(msg.serialize());
 }

@@ -96,6 +96,7 @@ private Q_SLOTS:
 	void onTextMessageReceived(QString aMessage);
 
 private:
+	const int version = 1;
     QWebSocket m_webSocket;
 	QUrl m_url;
 	State::GameState state;
@@ -112,6 +113,7 @@ private:
 		MsgType type;
 		QByteArray data;
 		QUuid source;
+		int msgVersion;
 
 		QByteArray serialize()
 		{
@@ -122,6 +124,7 @@ private:
 			stream << type;
 			stream << data;
 			stream << source;
+			stream << msgVersion;
 
 			return byteArray;
 		}
@@ -133,7 +136,8 @@ private:
 
 			stream >> msg.type
 					>> msg.data
-					>> msg.source;
+					>> msg.source
+					>> msg.msgVersion;
 			return msg;
 		}
 
